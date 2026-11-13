@@ -1,0 +1,86 @@
+name: synthesis-kvfixture
+
+# Three-node Raft key-value store with separate client and peer networks:
+# - kvclient publishes each node's HTTP API on 127.0.0.1 for client load and health probes.
+# - kvpeer is an internal Docker network carrying Raft AppendEntries and RequestVote RPCs.
+# Disconnecting the elected leader from kvpeer while leaving kvclient intact creates
+# an asymmetric gray partition: peers elect a new leader while clients can still
+# query the isolated old leader during its read-lease window.
+
+networks:
+  kvclient:
+    name: "${KV_PREFIX:-synthesis}-kvclient"
+  kvpeer:
+    name: "${KV_PREFIX:-synthesis}-kvpeer"
+    internal: true
+
+volumes:
+  n1data: {}
+  n2data: {}
+  n3data: {}
+
+x-kv: &kv
+  image: "synthesis/kvfixture:${KV_VARIANT:-buggy}"
+  pull_policy: never
+  restart: "no"
+  init: false
+  stop_grace_period: 3s
+  healthcheck:
+    test: ["CMD", "/kv", "healthcheck", "--url", "http://127.0.0.1:8080/healthz"]
+    interval: 1s
+    timeout: 2s
+    retries: 40
+    start_period: 1s
+
+services:
+  kv-n1:
+    <<: *kv
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: kv
+      args:
+        KV_VARIANT: "${KV_VARIANT:-buggy}"
+    pull_policy: build
+    container_name: "${KV_PREFIX:-synthesis}-kv-n1"
+    hostname: kv-n1
+    ports: ["127.0.0.1:${KV_PORT_N1:-18081}:8080"]
+    volumes: ["n1data:/var/lib/kv"]
+    networks:
+      kvclient: {}
+      kvpeer:
+        aliases: [n1-peer]
+    environment:
+      KV_NODE_ID: kv-n1
+      KV_PEERS: "kv-n2=http://n2-peer:9090,kv-n3=http://n3-peer:9090"
+      KV_SEED: "${KV_SEED:-20260906}"
+
+  kv-n2:
+    <<: *kv
+    container_name: "${KV_PREFIX:-synthesis}-kv-n2"
+    hostname: kv-n2
+    ports: ["127.0.0.1:${KV_PORT_N2:-18082}:8080"]
+    volumes: ["n2data:/var/lib/kv"]
+    networks:
+      kvclient: {}
+      kvpeer:
+        aliases: [n2-peer]
+    environment:
+      KV_NODE_ID: kv-n2
+      KV_PEERS: "kv-n1=http://n1-peer:9090,kv-n3=http://n3-peer:9090"
+      KV_SEED: "${KV_SEED:-20260906}"
+
+  kv-n3:
+    <<: *kv
+    container_name: "${KV_PREFIX:-synthesis}-kv-n3"
+    hostname: kv-n3
+    ports: ["127.0.0.1:${KV_PORT_N3:-18083}:8080"]
+    volumes: ["n3data:/var/lib/kv"]
+    networks:
+      kvclient: {}
+      kvpeer:
+        aliases: [n3-peer]
+    environment:
+      KV_NODE_ID: kv-n3
+      KV_PEERS: "kv-n1=http://n1-peer:9090,kv-n2=http://n2-peer:9090"
+      KV_SEED: "${KV_SEED:-20260906}"

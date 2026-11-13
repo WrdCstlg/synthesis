@@ -1,0 +1,178 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  quality-and-audit:
+    name: Quality, Reproducibility & Leak Audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22.x'
+          cache: true
+
+      - name: Check gofmt formatting
+        run: |
+          unformatted=$(gofmt -s -l .)
+          if [ -n "$unformatted" ]; then
+            echo "Files need gofmt -s:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: Verify Go modules and run go vet
+        run: |
+          go mod verify
+          go vet ./...
+          (
+            cd testdata/kvfixture
+            go mod verify
+            go vet ./...
+            go vet -tags kvfixed ./...
+          )
+
+      - name: Verify reproducible binary builds
+        run: |
+          d1=$(mktemp -d)
+          d2=$(mktemp -d)
+          trap 'rm -rf "$d1" "$d2"' EXIT
+          CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o "$d1/synthesis" ./cmd/synthesis
+          CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o "$d2/synthesis" ./cmd/synthesis
+          CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o "$d1/linearizable-kv" ./cmd/synthesis-oracle-linearizable
+          CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o "$d2/linearizable-kv" ./cmd/synthesis-oracle-linearizable
+          (
+            cd testdata/kvfixture
+            CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o "$d1/loadgen" ./cmd/loadgen
+            CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o "$d2/loadgen" ./cmd/loadgen
+          )
+          for b in synthesis linearizable-kv loadgen; do
+            h1=$(sha256sum "$d1/$b" | awk '{print $1}')
+            h2=$(sha256sum "$d2/$b" | awk '{print $1}')
+            echo "$b: $h1"
+            if [ "$h1" != "$h2" ]; then
+              echo "non-reproducible build for $b: $h1 vs $h2" >&2
+              exit 1
+            fi
+          done
+
+      - name: Run gitleaks secret scan
+        run: |
+          docker run --rm -v "$PWD:/repo:ro" zricethezav/gitleaks:v8.24.2 detect --source=/repo -v
+
+      - name: Run OSV dependency vulnerability scan
+        run: |
+          docker run --rm -v "$PWD:/repo:ro" ghcr.io/google/osv-scanner:v2.7.0 scan source -r /repo
+
+      - name: Run leak, binary, size, history, and network audit
+        env:
+          LEAK_AUDIT_DENYLIST: ${{ secrets.LEAK_AUDIT_DENYLIST }}
+          LEAK_AUDIT_REQUIRE_PRIVATE: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == true) && '0' || '1' }}
+        run: |
+          sh ./scripts/leak-audit.sh
+
+  unit-and-race:
+    name: Unit & Race Detector (Go ${{ matrix.go-version }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        go-version: ['1.22.x', 'stable']
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: true
+
+      - name: Run root module tests with race detector
+        run: |
+          go test -race -count=1 ./...
+
+      - name: Run kvfixture tests (buggy & kvfixed) with race detector
+        working-directory: testdata/kvfixture
+        run: |
+          go test -race -count=1 ./...
+          go test -race -tags kvfixed -count=1 ./...
+
+  acceptance:
+    name: Acceptance Suite (AT-1..AT-5)
+    needs: [quality-and-audit, unit-and-race]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22.x'
+          cache: true
+
+      - name: Pre-build kvfixture container variants
+        working-directory: testdata/kvfixture
+        run: |
+          KV_VARIANT=buggy docker compose build kv-n1
+          KV_VARIANT=kvfixed docker compose build kv-n1
+
+      - name: Run AT-1..AT-4 Docker Compose acceptance tests
+        env:
+          SYNTHESIS_ACCEPTANCE: '1'
+        run: |
+          go test -v -count=1 -timeout 12m ./internal/demo
+
+      - name: Run AT-5 one-command demo.sh (< 10 minutes budget)
+        run: |
+          rm -rf testdata/kvfixture/.synthesis/runs
+          start_epoch=$(date +%s)
+          sh ./demo.sh
+          end_epoch=$(date +%s)
+          elapsed=$((end_epoch - start_epoch))
+          echo "AT-5 demo.sh elapsed: ${elapsed}s (budget: < 600s)"
+          if [ "$elapsed" -ge 600 ]; then
+            echo "AT-5 exceeded 600s budget: ${elapsed}s" >&2
+            exit 1
+          fi
+
+      - name: Verify clean container and network teardown
+        run: |
+          leftover=$(docker ps -a --format '{{.Names}}' | grep '^syn_' || true)
+          if [ -n "$leftover" ]; then
+            echo "Leftover synthesis containers found:" >&2
+            echo "$leftover" >&2
+            exit 1
+          fi
+
+      - name: Upload verdict and witness artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: synthesis-demo-artifacts
+          path: |
+            testdata/kvfixture/.synthesis/runs/**/verdict.json
+            testdata/kvfixture/.synthesis/runs/**/witness.svg
+          if-no-files-found: ignore
+          retention-days: 14

@@ -1,0 +1,59 @@
+version: prothesis/v1
+name: kvfixture
+
+harness:
+  backend: compose
+  file: docker-compose.yaml
+  variant_env: KV_VARIANT
+  prefix_env: KV_PREFIX
+  nodes:
+    - { id: kv-n1, service: kv, compose_service: kv-n1, role_hint: replica, port_env: KV_PORT_N1 }
+    - { id: kv-n2, service: kv, compose_service: kv-n2, role_hint: replica, port_env: KV_PORT_N2 }
+    - { id: kv-n3, service: kv, compose_service: kv-n3, role_hint: replica, port_env: KV_PORT_N3 }
+  health:
+    - node: "kv:*"
+      probe: "http://{host}:{port}/healthz"
+      timeout: 30s
+  steady_state:
+    probe: "docker compose exec -T kv-n1 /kv steady --targets http://kv-n1:8080,http://kv-n2:8080,http://kv-n3:8080 --timeout 55s"
+    timeout: 60s
+
+driver:
+  cmd: "./bin/loadgen --history {history_path} --seed {seed} --profile {profile}"
+  profiles:
+    smoke: { clients: 4, ops: 500, mix: { read: 0.5, write: 0.5 } }
+    linear: { clients: 16, ops: 60000, mix: { read: 0.5, write: 0.5 } }
+
+perturber:
+  budget: { max_concurrent_faults: 1, max_faults_per_world: 1 }
+  allow: [net.partition]
+  deny: []
+  constraints:
+    - "never partition more than minority of kv"
+
+oracles:
+  dir: .synthesis/oracles
+  builtin:
+    [
+      no_crash,
+      no_panic_log,
+      availability_after_heal,
+      no_stuck_op,
+    ]
+
+profiles:
+  buggy:
+    budget: 10m
+    worlds: 1
+    variant: buggy
+    driver_profile: linear
+    faults: ["net.partition(role:leader)@3000..7500"]
+  patched:
+    budget: 10m
+    worlds: 2
+    variant: kvfixed
+    driver_profile: linear
+    faults: ["net.partition(role:leader)@3000..7500"]
+
+artifacts:
+  dir: .synthesis/runs

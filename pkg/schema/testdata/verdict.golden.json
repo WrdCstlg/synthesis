@@ -1,0 +1,75 @@
+{
+  "schema": "prothesis.verdict/v1",
+  "run_id": "r_2026_09_28_a41f",
+  "profile": "buggy",
+  "commit": "02ce6d6",
+  "verdict": "FAIL",
+  "budget": {
+    "wall_s": 600,
+    "used_s": 18,
+    "worlds_planned": 1,
+    "worlds_run": 1
+  },
+  "violations": [
+    {
+      "id": "v1",
+      "oracle": "linearizable.kv",
+      "class": "consistency",
+      "severity": "high",
+      "phase": "DRIVE",
+      "first_seen_ms": 4120,
+      "explanation": "linearizable.kv: key \"k0\": no linearization exists for the 12 operation(s) checked; search exhausted (34 state(s) explored over 18 step(s)). At that point the register held \"v2\", written by op 14, and op 19 (process 3, read) returned \"v1\". That value was written by op 8, which every linearization places before the value the register held.",
+      "witness": {
+        "op_ids": [8, 14, 19],
+        "key": "k0"
+      },
+      "causal_timeline": [
+        {
+          "t_ms": 2100,
+          "event": "op",
+          "detail": "process 1 write k0 -> \"v1\" [invoke op_id=8]"
+        },
+        {
+          "t_ms": 2140,
+          "event": "op",
+          "detail": "process 1 write k0 -> \"v1\" [ok op_id=8]"
+        },
+        {
+          "t_ms": 3000,
+          "event": "fault",
+          "detail": "inject net.partition(role:leader)@3000..7500 -> kv-n1"
+        },
+        {
+          "t_ms": 3850,
+          "event": "op",
+          "detail": "process 2 write k0 -> \"v2\" [invoke op_id=14]"
+        },
+        {
+          "t_ms": 3910,
+          "event": "op",
+          "detail": "process 2 write k0 -> \"v2\" [ok op_id=14]"
+        },
+        {
+          "t_ms": 4110,
+          "event": "op",
+          "detail": "process 3 read k0 [invoke op_id=19]"
+        },
+        {
+          "t_ms": 4120,
+          "event": "op",
+          "detail": "process 3 read k0 -> \"v1\" [ok op_id=19]"
+        },
+        {
+          "t_ms": 7500,
+          "event": "fault",
+          "detail": "withdraw net.partition(role:leader)@3000..7500"
+        }
+      ]
+    }
+  ],
+  "oracle_lock": {
+    "status": "ok",
+    "manifest_sha": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "artifacts": ".synthesis/runs/r_2026_09_28_a41f/"
+}

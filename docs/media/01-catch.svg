@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="815" height="496" viewBox="0 0 815 496" role="img" aria-labelledby="t d">
+<title id="t">catch the planted stale read</title>
+<desc id="d">Terminal recording made 2026-11-11T04:42:31.381Z on win32/x64. Every line is shown as recorded; on playback, pauses longer than 1 s are shortened, and long lines wrap. The recording with its measured timestamps is 01-catch.cast.</desc>
+<style>
+text{font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;font-size:13px;fill:#c9d1d9;white-space:pre}
+.ps{fill:#3fb950}.cmd{fill:#f0f6fc;font-weight:600}.dim{fill:#8b949e}.op{fill:#8b949e}.phase{fill:#79c0ff}
+.fault{fill:#d2a8ff}.ok{fill:#3fb950;font-weight:600}.bad{fill:#ff7b72;font-weight:600}.warn{fill:#e3b341;font-weight:600}
+.drift{fill:#f778ba;font-weight:600}.head{fill:#f0f6fc;font-weight:600}.title{fill:#8b949e;font-size:12px}
+.l{opacity:0;animation-duration:8.369s;animation-iteration-count:infinite;animation-timing-function:steps(1,end)}
+.strip{animation:scroll 8.369s steps(1,end) infinite}
+@keyframes scroll{0%{transform:translateY(0)}0.000%{transform:translateY(-0px)}100%{transform:translateY(-0px)}}
+@keyframes r0{0%,100%{opacity:1}}
+@keyframes r1{0%{opacity:0}4.104%,100%{opacity:1}}
+@keyframes r2{0%{opacity:0}4.117%,100%{opacity:1}}
+@keyframes r3{0%{opacity:0}4.117%,100%{opacity:1}}
+@keyframes r4{0%{opacity:0}4.118%,100%{opacity:1}}
+@keyframes r5{0%{opacity:0}4.380%,100%{opacity:1}}
+@keyframes r6{0%{opacity:0}16.330%,100%{opacity:1}}
+@keyframes r7{0%{opacity:0}28.279%,100%{opacity:1}}
+@keyframes r8{0%{opacity:0}28.305%,100%{opacity:1}}
+@keyframes r9{0%{opacity:0}28.305%,100%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.l{animation:none;opacity:1}.strip{animation:none;transform:translateY(-0px)}}
+</style>
+<defs><clipPath id="screen"><rect x="10" y="49" width="795" height="434"/></clipPath></defs>
+<rect x="0.5" y="0.5" width="814" height="495" rx="10" fill="#0d1117" stroke="#30363d"/>
+<path d="M0.5 34H814.5" stroke="#30363d"/>
+<circle cx="20" cy="17" r="6" fill="#ff5f57"/><circle cx="40" cy="17" r="6" fill="#febc2e"/><circle cx="60" cy="17" r="6" fill="#28c840"/>
+<text class="title" x="407.5" y="21" text-anchor="middle">catch the planted stale read</text>
+<g clip-path="url(#screen)"><g class="strip">
+<text class="l cmd" x="16" y="63" style="animation-name:r0"><tspan class="ps">$ </tspan>synthesis verify-lock</text>
+<text class="l" x="16" y="81" style="animation-name:r1">oracle lock OK: sha256:20b3b4bc69b50fabca35f573e61618162651a2ecf3571036340096ec6fd641e1</text>
+<text class="l" x="16" y="99" style="animation-name:r1">  1 oracle file(s) under .synthesis/oracles, 47 covered config value(s)</text>
+<text class="l" x="16" y="117" style="animation-name:r1">  locked 2026-11-10T00:00:00Z: initial locked baseline for kvfixture public demonstration</text>
+<text class="l" x="16" y="135" style="animation-name:r1">    (AT-1..AT-3)</text>
+<text class="l cmd" x="16" y="153" style="animation-name:r2"><tspan class="ps">$ </tspan>echo $?</text>
+<text class="l ok" x="16" y="171" style="animation-name:r3">0</text>
+<text class="l cmd" x="16" y="189" style="animation-name:r4"><tspan class="ps">$ </tspan>synthesis run --profile buggy --seed 20261109</text>
+<text class="l" x="16" y="207" style="animation-name:r5">synthesis run: id=r_2026_11_11_5379 profile=buggy variant=buggy worlds=1 lock=sha256:20b3b4bc69b5</text>
+<text class="l" x="16" y="225" style="animation-name:r6">  world 1/buggy: records=11118 violations=1</text>
+<text class="l bad" x="16" y="243" style="animation-name:r7">verdict: FAIL (exit 1) | worlds=1/1 | lock=ok | .synthesis/runs/r_2026_11_11_5379/verdict.json</text>
+<text class="l" x="16" y="261" style="animation-name:r7">  violation: [linearizable.kv] key "k/0": no linearization exists for the 693 operation(s) on this</text>
+<text class="l" x="16" y="279" style="animation-name:r7">    key under a last-write-wins register. The search space was exhausted (4551 state(s) explored</text>
+<text class="l" x="16" y="297" style="animation-name:r7">    over 17237 step(s)) with every branch rejected; this is a WITNESSED failure, not a timeout and</text>
+<text class="l" x="16" y="315" style="animation-name:r7">    not a budget. The deepest partial linearization the search reached placed 500 of 693</text>
+<text class="l" x="16" y="333" style="animation-name:r7">    operation(s) on this key. At that point the register held 253, written by op 4047, and op 4050</text>
+<text class="l" x="16" y="351" style="animation-name:r7">    (process 5, read) returned 4000237. That value was written by op 3832, which every linearization</text>
+<text class="l" x="16" y="369" style="animation-name:r7">    places before the value the register held. The witness op_ids point at the failure; the proof is</text>
+<text class="l" x="16" y="387" style="animation-name:r7">    the exhausted search over the whole key, not those operations alone. Evidence: 2711 determinate</text>
+<text class="l" x="16" y="405" style="animation-name:r7">    read(s), 2764 determinate write(s), 64 indeterminate write(s) explored on both the applied and</text>
+<text class="l" x="16" y="423" style="animation-name:r7">    the not-applied branch; 16 failed operation(s) dropped; 4 indeterminate read(s) dropped.</text>
+<text class="l" x="16" y="441" style="animation-name:r7">  witness:   .synthesis/runs/r_2026_11_11_5379/witness.svg</text>
+<text class="l cmd" x="16" y="459" style="animation-name:r8"><tspan class="ps">$ </tspan>echo $?</text>
+<text class="l bad" x="16" y="477" style="animation-name:r9">1</text>
+</g></g>
+</svg>

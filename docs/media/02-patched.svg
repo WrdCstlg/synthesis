@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="815" height="496" viewBox="0 0 815 496" role="img" aria-labelledby="t d">
+<title id="t">patch the defect and prove the fix</title>
+<desc id="d">Terminal recording made 2026-11-11T04:42:45.295Z on win32/x64. Every line is shown as recorded; on playback, pauses longer than 1 s are shortened, and long lines wrap. The recording with its measured timestamps is 02-patched.cast.</desc>
+<style>
+text{font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;font-size:13px;fill:#c9d1d9;white-space:pre}
+.ps{fill:#3fb950}.cmd{fill:#f0f6fc;font-weight:600}.dim{fill:#8b949e}.op{fill:#8b949e}.phase{fill:#79c0ff}
+.fault{fill:#d2a8ff}.ok{fill:#3fb950;font-weight:600}.bad{fill:#ff7b72;font-weight:600}.warn{fill:#e3b341;font-weight:600}
+.drift{fill:#f778ba;font-weight:600}.head{fill:#f0f6fc;font-weight:600}.title{fill:#8b949e;font-size:12px}
+.l{opacity:0;animation-duration:9.029s;animation-iteration-count:infinite;animation-timing-function:steps(1,end)}
+.strip{animation:scroll 9.029s steps(1,end) infinite}
+@keyframes scroll{0%{transform:translateY(0)}0.000%{transform:translateY(-0px)}100%{transform:translateY(-0px)}}
+@keyframes r0{0%,100%{opacity:1}}
+@keyframes r1{0%{opacity:0}0.300%,100%{opacity:1}}
+@keyframes r2{0%{opacity:0}11.375%,100%{opacity:1}}
+@keyframes r3{0%{opacity:0}22.450%,100%{opacity:1}}
+@keyframes r4{0%{opacity:0}33.525%,100%{opacity:1}}
+@keyframes r5{0%{opacity:0}33.550%,100%{opacity:1}}
+@keyframes r6{0%{opacity:0}33.550%,100%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.l{animation:none;opacity:1}.strip{animation:none;transform:translateY(-0px)}}
+</style>
+<defs><clipPath id="screen"><rect x="10" y="49" width="795" height="434"/></clipPath></defs>
+<rect x="0.5" y="0.5" width="814" height="495" rx="10" fill="#0d1117" stroke="#30363d"/>
+<path d="M0.5 34H814.5" stroke="#30363d"/>
+<circle cx="20" cy="17" r="6" fill="#ff5f57"/><circle cx="40" cy="17" r="6" fill="#febc2e"/><circle cx="60" cy="17" r="6" fill="#28c840"/>
+<text class="title" x="407.5" y="21" text-anchor="middle">patch the defect and prove the fix</text>
+<g clip-path="url(#screen)"><g class="strip">
+<text class="l cmd" x="16" y="63" style="animation-name:r0"><tspan class="ps">$ </tspan>synthesis run --profile patched --seed 20261109</text>
+<text class="l" x="16" y="81" style="animation-name:r1">synthesis run: id=r_2026_11_11_9097 profile=patched variant=kvfixed worlds=2</text>
+<text class="l" x="16" y="99" style="animation-name:r1">    lock=sha256:20b3b4bc69b5</text>
+<text class="l" x="16" y="117" style="animation-name:r2">  world 1/kvfixed: records=10786 violations=0</text>
+<text class="l" x="16" y="135" style="animation-name:r3">  world 2/kvfixed: records=11582 violations=0</text>
+<text class="l ok" x="16" y="153" style="animation-name:r4">verdict: PASS (exit 0) | worlds=2/2 | lock=ok | .synthesis/runs/r_2026_11_11_9097/verdict.json</text>
+<text class="l cmd" x="16" y="171" style="animation-name:r5"><tspan class="ps">$ </tspan>echo $?</text>
+<text class="l ok" x="16" y="189" style="animation-name:r6">0</text>
+</g></g>
+</svg>

@@ -1,0 +1,8 @@
+{"version":2,"width":100,"height":24,"timestamp":1794372165,"title":"patch the defect and prove the fix","env":{"TERM":"xterm-256color","SHELL":"recorded by scripts/demo/record.mjs"},"synthesis":{"recorded_at":"2026-11-11T04:42:45.295Z","finished_at":"2026-11-11T04:43:12.292Z","platform":"win32/x64","note":"Commands are shown in POSIX form; \"steps\" records measured execution.","steps":[{"show":"synthesis run --profile patched --seed 20261109","cwd":"testdata/kvfixture","env":{},"exit_code":0,"seconds":26.996}]}}
+[0.000034,"o","$ synthesis run --profile patched --seed 20261109\r\n"]
+[0.027063,"o","synthesis run: id=r_2026_11_11_9097 profile=patched variant=kvfixed worlds=2 lock=sha256:20b3b4bc69b5\r\n"]
+[11.293383,"o","  world 1/kvfixed: records=10786 violations=0\r\n"]
+[24.724099,"o","  world 2/kvfixed: records=11582 violations=0\r\n"]
+[26.993729,"o","verdict: PASS (exit 0) | worlds=2/2 | lock=ok | .synthesis/runs/r_2026_11_11_9097/verdict.json\r\n"]
+[26.996051,"o","$ echo $?\r\n"]
+[26.996057,"o","0\r\n"]

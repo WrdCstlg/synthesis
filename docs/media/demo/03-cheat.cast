@@ -1,0 +1,6 @@
+{"version":2,"width":100,"height":24,"timestamp":1794372192,"title":"try to weaken the test","env":{"TERM":"xterm-256color","SHELL":"recorded by scripts/demo/record.mjs"},"synthesis":{"recorded_at":"2026-11-11T04:43:12.339Z","finished_at":"2026-11-11T04:43:12.372Z","platform":"win32/x64","note":"Commands are shown in POSIX form; \"steps\" records measured execution.","steps":[{"show":"sed -i 's/ops: 60000/ops: 100/' synthesis.yaml","edit":{"file":"testdata/kvfixture/synthesis.yaml"},"applied":true},{"show":"synthesis run --profile patched","cwd":"testdata/kvfixture","env":{},"exit_code":4,"seconds":0.032}]}}
+[0.000032,"o","$ sed -i 's/ops: 60000/ops: 100/' synthesis.yaml\r\n"]
+[0.000407,"o","$ synthesis run --profile patched\r\n"]
+[0.031017,"o","ORACLE DRIFT — the gate has moved since it was last locked.\r\n  locked   sha256:20b3b4bc69b50fabca35f573e61618162651a2ecf3571036340096ec6fd641e1\r\n  computed sha256:403693478a6f8deb5ee6bcf8a7991bb36bcb72b60efc6f938d8aa9076d8e5e12\r\n  last locked 2026-11-10T00:00:00Z: initial locked baseline for kvfixture public demonstration (AT-1..AT-3)\r\n  What moved (1):\r\n    - config CHANGED:       driver.profiles.linear.ops: 60000 -> 100\r\n  Exit 4 is never auto-resolved. Revert the change above, or update .synthesis/lock in a human-reviewed commit.\r\n"]
+[0.03247,"o","$ echo $?\r\n"]
+[0.032473,"o","4\r\n"]

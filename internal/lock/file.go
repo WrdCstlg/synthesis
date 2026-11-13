@@ -1,0 +1,239 @@
+package lock
+
+import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"os"
+	"path/filepath"
+	"runtime"
+	"strings"
+	"time"
+
+	"synthesis.dev/synthesis/internal/recorder"
+)
+
+// FileName is the lock file inside the project state directory.
+const FileName = "lock"
+
+// FileSchema identifies the lock document.
+//
+// ADDITIVE, like ManifestSchema: the directive names the PATH `.synthesis/lock`
+// and the verdict field `oracle_lock.manifest_sha`, and fixes no document
+// schema for the file itself. Logged as design record.
+const FileSchema = "prothesis.lock/v1"
+
+// ErrNoLock is returned when the project has no lock file.
+//
+// It is a distinct sentinel because "absent" and "mismatched" call for
+// different actions and must never be collapsed: a mismatch is drift a human
+// must adjudicate, an absence is a project that has not been locked yet.
+var ErrNoLock = errors.New("lock: no .synthesis/lock in this project")
+
+// Path returns the lock file path for a project root.
+func Path(projectDir string) string {
+	return filepath.Join(recorder.StateDir(projectDir), FileName)
+}
+
+// File is the on-disk `.synthesis/lock` document.
+//
+// It is written as indented JSON rather than canonical compact JSON on purpose:
+// the whole design intent is that a lock bump is a REVIEWABLE COMMIT, and a
+// one-line file produces a diff no reviewer can read. The digest is computed
+// over the canonical encoding of Manifest alone, so the presentation of this
+// file has no effect on it.
+//
+// Reason, LockedAt, ToolVersion, BuiltinOptionsFingerprint and Limitations are
+// all OUTSIDE the digest. That is deliberate for each:
+//
+//   - Reason and LockedAt change on every bump by construction; digesting them
+//     would make the digest a function of when it was written.
+//   - ToolVersion must not be hashed, or every upgrade of `thesis` becomes an
+//     exit-4 incident on every downstream project (see cmd/thesis/version.go
+//     and design record.2).
+//   - BuiltinOptionsFingerprint covers COMPILED-IN thresholds reachable from no
+//     config key. It is recorded so a reviewer can see it moved, and excluded
+//     so that a threshold adjustment in a release is a warning rather than
+//     drift. design record.
+type File struct {
+	Schema string `json:"schema"`
+	// ManifestSHA is the digest of Manifest, "sha256:"-prefixed. It is the
+	// value the verdict's oracle_lock.manifest_sha carries.
+	ManifestSHA string `json:"manifest_sha"`
+	// Reason is the MANDATORY human justification for this bump.
+	Reason string `json:"reason"`
+	// LockedAt is RFC 3339 UTC.
+	LockedAt string `json:"locked_at"`
+	// ToolVersion is the thesis build that wrote the file. Informational.
+	ToolVersion string `json:"tool_version"`
+	// BuiltinOptionsFingerprint is internal/oracle.Options.Fingerprint at write
+	// time. Informational; outside the digest.
+	BuiltinOptionsFingerprint string `json:"builtin_options_fingerprint,omitempty"`
+	// Executables records what each external oracle's cmd resolved to, and what
+	// that file hashed to, at write time. OUTSIDE the digest, for the reason
+	// given on ExecutableFingerprint. design record.
+	//
+	// Omitted when empty so that a project with no external oracles, and a lock
+	// written before this block existed, both stay byte-identical.
+	Executables []ExecutableFingerprint `json:"executables,omitempty"`
+	// Platform is the GOOS/GOARCH the Executables fingerprints were taken on.
+	// On that platform a program that no longer matches is drift (exit 4); on
+	// any other it is a warning, because a build for another OS can never match
+	//. Empty in a lock written before it was recorded, which only warns.
+	Platform string `json:"platform,omitempty"`
+	// Covers names the synthesis.yaml paths the manifest digests, so a reader
+	// of the file can see the scope without reading this package.
+	Covers []string `json:"covers"`
+	// Limitations states, in the artifact itself, what this lock does NOT
+	// guarantee. It is emitted rather than assumed because a reader who trusts
+	// the lock for more than it provides is worse off than one with no lock.
+	Limitations []string `json:"limitations"`
+	// Manifest is the full projection, kept so that `verify` can say exactly
+	// what moved instead of only that something did.
+	Manifest Manifest `json:"manifest"`
+}
+
+// Limitations is the honest-limitation text embedded in every lock file.
+//
+// The first entry is the verdict-signing concern (v3) and is the one that
+// matters: hashing a definition is not hashing an executable.
+var Limitations = []string{
+	"The DIGEST does not cover the EXECUTABLE an oracle or the driver names. Files under " +
+		"oracles.dir are covered byte for byte; the binary, interpreter, shared library, " +
+		"container image or PATH entry resolved at run time is NOT hashed into manifest_sha. " +
+		"The `executables` block records each resolved program's SHA-256 OUTSIDE the digest, " +
+		"with the `platform` it was taken on. On that platform a changed, missing or newly " +
+		"resolvable program is ORACLE_DRIFT (exit 4, design record.); on any other platform it is a " +
+		"WARNING that also lands in the verdict, because a build for another OS can never match " +
+		". A program is reproducible from unchanged source only if it is built without a " +
+		"commit stamp. Only the program is fingerprinted — not its arguments, its interpreter, " +
+		"or anything it loads — and nothing short of signing makes a swap impossible.",
+	"File modes are not covered. The executable bit does not survive a Windows checkout, so " +
+		"hashing it would fire a spurious ORACLE_DRIFT on a cross-platform clone.",
+	"Built-in oracle thresholds are compiled in and reachable from no config key. " +
+		"builtin_options_fingerprint records them for review but is OUTSIDE the digest: " +
+		"including it would turn any release that adjusts a default into exit 4 on every " +
+		"downstream project at once. `synthesis verify-lock` reports a moved fingerprint as a " +
+		"warning, never as drift.",
+	"The driver is covered by its COMMAND and by the driver profiles a run profile names " +
+		". A driver profile no run profile names is not covered, because it is not the " +
+		"gate's workload and covering it would fire exit 4 on routine edits. The " +
+		"driver's PROGRAM is fingerprinted in the `executables` block as `driver.cmd`, outside " +
+		"the digest, so a rebuilt or swapped driver is a WARNING and not drift. Neither the " +
+		"workload a driver compiles in for a profile name nor the environment it inherits is " +
+		"covered: a driver that reads its workload from its own table or from environment " +
+		"variables can still be changed without moving this digest.",
+	"The digest covers the USER-SUPPLIED synthesis.yaml with defaults NOT applied. A key you " +
+		"did not write contributes nothing, so upgrading thesis cannot move this digest by " +
+		"changing a compiled-in default.",
+}
+
+// Read loads the lock file for a project.
+//
+// A missing file returns ErrNoLock. A malformed file is an ERROR, never an
+// absent lock: treating unparseable bytes as "no lock" would let a single
+// corrupting write silently clear the drift check.
+func Read(projectDir string) (*File, error) {
+	p := Path(projectDir)
+	data, err := os.ReadFile(p)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, fmt.Errorf("%w (looked in %s)", ErrNoLock, p)
+		}
+		return nil, fmt.Errorf("lock: read %s: %w", p, err)
+	}
+	var f File
+	dec := json.NewDecoder(bytes.NewReader(data))
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&f); err != nil {
+		return nil, fmt.Errorf("lock: %s is not a readable lock file: %w "+
+			"(this is NOT treated as an absent lock: a corrupt lock must not clear the drift check)", p, err)
+	}
+	if f.Schema != FileSchema {
+		return nil, fmt.Errorf("lock: %s declares schema %q, want %q", p, f.Schema, FileSchema)
+	}
+	if f.ManifestSHA == "" {
+		return nil, fmt.Errorf("lock: %s carries no manifest_sha", p)
+	}
+	return &f, nil
+}
+
+// WriteOptions are the inputs to a lock bump.
+type WriteOptions struct {
+	ProjectDir string
+	Manifest   Manifest
+	// Reason is MANDATORY. A bump with no stated reason is indistinguishable
+	// from an agent quietly re-baselining a gate it could not pass, which is
+	// the exact behaviour invariant I6 exists to make visible.
+	Reason string
+	// ToolVersion is recorded, never hashed.
+	ToolVersion string
+	// BuiltinOptionsFingerprint is recorded, never hashed.
+	BuiltinOptionsFingerprint string
+	// Executables are the resolved-program fingerprints. Recorded, never hashed.
+	Executables []ExecutableFingerprint
+	// Platform overrides the recorded GOOS/GOARCH, for tests. Empty means
+	// CurrentPlatform().
+	Platform string
+	// Now overrides the timestamp, for tests.
+	Now time.Time
+}
+
+// CurrentPlatform is the GOOS/GOARCH this binary runs on, the form recorded in
+// File.Platform.
+func CurrentPlatform() string { return runtime.GOOS + "/" + runtime.GOARCH }
+
+// ErrNoReason is returned when a lock bump carries no justification.
+var ErrNoReason = errors.New("lock: --reason is mandatory: a lock bump with no stated reason is " +
+	"indistinguishable from re-baselining a gate that could not be passed")
+
+// Write writes (or refreshes) the project's lock file and returns the document
+// it wrote.
+func Write(opts WriteOptions) (*File, error) {
+	if strings.TrimSpace(opts.Reason) == "" {
+		return nil, ErrNoReason
+	}
+	sum, err := opts.Manifest.Digest()
+	if err != nil {
+		return nil, err
+	}
+	now := opts.Now
+	if now.IsZero() {
+		now = time.Now()
+	}
+	platform := opts.Platform
+	if platform == "" && len(opts.Executables) > 0 {
+		platform = CurrentPlatform()
+	}
+	f := &File{
+		Schema:                    FileSchema,
+		ManifestSHA:               sum,
+		Reason:                    strings.TrimSpace(opts.Reason),
+		LockedAt:                  now.UTC().Format(time.RFC3339),
+		ToolVersion:               opts.ToolVersion,
+		BuiltinOptionsFingerprint: opts.BuiltinOptionsFingerprint,
+		Executables:               append([]ExecutableFingerprint(nil), opts.Executables...),
+		Platform:                  platform,
+		Covers:                    append(append([]string(nil), CoveredPaths...), CoveredByReference),
+		Limitations:               append([]string(nil), Limitations...),
+		Manifest:                  opts.Manifest,
+	}
+
+	dir := recorder.StateDir(opts.ProjectDir)
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return nil, fmt.Errorf("lock: create %s: %w", dir, err)
+	}
+	buf := &bytes.Buffer{}
+	enc := json.NewEncoder(buf)
+	enc.SetEscapeHTML(false)
+	enc.SetIndent("", "  ")
+	if err := enc.Encode(f); err != nil {
+		return nil, fmt.Errorf("lock: encode lock file: %w", err)
+	}
+	p := Path(opts.ProjectDir)
+	if err := os.WriteFile(p, buf.Bytes(), 0o644); err != nil {
+		return nil, fmt.Errorf("lock: write %s: %w", p, err)
+	}
+	return f, nil
+}

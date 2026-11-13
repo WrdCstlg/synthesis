@@ -1,0 +1,7 @@
+{"version":2,"width":100,"height":24,"timestamp":1794372192,"title":"test less, prove less","env":{"TERM":"xterm-256color","SHELL":"recorded by scripts/demo/record.mjs"},"synthesis":{"recorded_at":"2026-11-11T04:43:12.425Z","finished_at":"2026-11-11T04:43:25.894Z","platform":"win32/x64","note":"Commands are shown in POSIX form; \"steps\" records measured execution.","steps":[{"show":"synthesis run --profile patched --worlds 1 --seed 20261109","cwd":"testdata/kvfixture","env":{},"exit_code":2,"seconds":13.468}]}}
+[0.000033,"o","$ synthesis run --profile patched --worlds 1 --seed 20261109\r\n"]
+[0.02525,"o","synthesis run: id=r_2026_11_11_a4a6 profile=patched variant=kvfixed worlds=1 lock=sha256:20b3b4bc69b5\r\n"]
+[11.513022,"o","  world 1/kvfixed: records=9826 violations=0\r\n"]
+[13.465238,"o","verdict: INCONCLUSIVE (exit 2) | worlds=1/1 | lock=bypassed | .synthesis/runs/r_2026_11_11_a4a6/verdict.json\r\n  reason: run narrowed below locked profile (1/2 world(s), 600s/600s budget); a narrowed run can prove FAIL, never PASS\r\n"]
+[13.467923,"o","$ echo $?\r\n"]
+[13.467927,"o","2\r\n"]

@@ -1,0 +1,16 @@
+# Compiled binaries (never committed; built at runtime or in CI)
+/bin/
+/testdata/kvfixture/bin/
+*.exe
+*.test
+*.out
+
+# Ephemeral run artifacts
+/.synthesis/runs/
+/testdata/kvfixture/.synthesis/runs/
+/.prothesis/runs/
+/testdata/kvfixture/.prothesis/runs/
+
+# Local test/coverage scratch
+coverage.txt
+test.json

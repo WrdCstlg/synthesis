@@ -1,0 +1,283 @@
+{
+  "schema": "prothesis.lock/v1",
+  "manifest_sha": "sha256:20b3b4bc69b50fabca35f573e61618162651a2ecf3571036340096ec6fd641e1",
+  "reason": "initial locked baseline for kvfixture public demonstration (AT-1..AT-3)",
+  "locked_at": "2026-11-10T00:00:00Z",
+  "tool_version": "0.1.0-demo",
+  "covers": [
+    "driver.cmd",
+    "harness.file",
+    "harness.health",
+    "harness.nodes",
+    "harness.role_probe",
+    "harness.steady_state",
+    "harness.variant_env",
+    "oracles.builtin",
+    "oracles.dir",
+    "perturber.allow",
+    "perturber.budget",
+    "perturber.constraints",
+    "perturber.deny",
+    "profiles",
+    "driver.profiles.<name>, for every <name> a profiles.*.driver_profile names"
+  ],
+  "limitations": [
+    "The DIGEST does not cover the EXECUTABLE an oracle or the driver names. Files under oracles.dir are covered byte for byte; the binary, interpreter, shared library, container image or PATH entry resolved at run time is NOT hashed into manifest_sha. The `executables` block records each resolved program's SHA-256 OUTSIDE the digest, with the `platform` it was taken on. On that platform a changed, missing or newly resolvable program is ORACLE_DRIFT (exit 4, design record.); on any other platform it is a WARNING that also lands in the verdict, because a build for another OS can never match . A program is reproducible from unchanged source only if it is built without a commit stamp. Only the program is fingerprinted — not its arguments, its interpreter, or anything it loads — and nothing short of signing makes a swap impossible.",
+    "File modes are not covered. The executable bit does not survive a Windows checkout, so hashing it would fire a spurious ORACLE_DRIFT on a cross-platform clone.",
+    "Built-in oracle thresholds are compiled in and reachable from no config key. builtin_options_fingerprint records them for review but is OUTSIDE the digest: including it would turn any release that adjusts a default into exit 4 on every downstream project at once. `synthesis verify-lock` reports a moved fingerprint as a warning, never as drift.",
+    "The driver is covered by its COMMAND and by the driver profiles a run profile names . A driver profile no run profile names is not covered, because it is not the gate's workload and covering it would fire exit 4 on routine edits. The driver's PROGRAM is fingerprinted in the `executables` block as `driver.cmd`, outside the digest, so a rebuilt or swapped driver is a WARNING and not drift. Neither the workload a driver compiles in for a profile name nor the environment it inherits is covered: a driver that reads its workload from its own table or from environment variables can still be changed without moving this digest.",
+    "The digest covers the USER-SUPPLIED synthesis.yaml with defaults NOT applied. A key you did not write contributes nothing, so upgrading thesis cannot move this digest by changing a compiled-in default."
+  ],
+  "manifest": {
+    "schema": "prothesis.lock_manifest/v2",
+    "oracles": [
+      {
+        "path": "linearizable.kv.yaml",
+        "sha256": "sha256:d7ee7be132a3e2827e061305eeecd05c33a0077f394e96c79000441064953969",
+        "size": 2920
+      }
+    ],
+    "config": [
+      {
+        "path": "driver.cmd",
+        "kind": "scalar",
+        "value": "./bin/loadgen --history {history_path} --seed {seed} --profile {profile}"
+      },
+      {
+        "path": "driver.profiles.linear.clients",
+        "kind": "scalar",
+        "value": "16"
+      },
+      {
+        "path": "driver.profiles.linear.mix.read",
+        "kind": "scalar",
+        "value": "0.5"
+      },
+      {
+        "path": "driver.profiles.linear.mix.write",
+        "kind": "scalar",
+        "value": "0.5"
+      },
+      {
+        "path": "driver.profiles.linear.ops",
+        "kind": "scalar",
+        "value": "60000"
+      },
+      {
+        "path": "harness.file",
+        "kind": "scalar",
+        "value": "docker-compose.yaml"
+      },
+      {
+        "path": "harness.health[0].node",
+        "kind": "scalar",
+        "value": "kv:*"
+      },
+      {
+        "path": "harness.health[0].probe",
+        "kind": "scalar",
+        "value": "http://{host}:{port}/healthz"
+      },
+      {
+        "path": "harness.health[0].timeout",
+        "kind": "scalar",
+        "value": "30s"
+      },
+      {
+        "path": "harness.nodes[0].compose_service",
+        "kind": "scalar",
+        "value": "kv-n1"
+      },
+      {
+        "path": "harness.nodes[0].id",
+        "kind": "scalar",
+        "value": "kv-n1"
+      },
+      {
+        "path": "harness.nodes[0].port_env",
+        "kind": "scalar",
+        "value": "KV_PORT_N1"
+      },
+      {
+        "path": "harness.nodes[0].role_hint",
+        "kind": "scalar",
+        "value": "replica"
+      },
+      {
+        "path": "harness.nodes[0].service",
+        "kind": "scalar",
+        "value": "kv"
+      },
+      {
+        "path": "harness.nodes[1].compose_service",
+        "kind": "scalar",
+        "value": "kv-n2"
+      },
+      {
+        "path": "harness.nodes[1].id",
+        "kind": "scalar",
+        "value": "kv-n2"
+      },
+      {
+        "path": "harness.nodes[1].port_env",
+        "kind": "scalar",
+        "value": "KV_PORT_N2"
+      },
+      {
+        "path": "harness.nodes[1].role_hint",
+        "kind": "scalar",
+        "value": "replica"
+      },
+      {
+        "path": "harness.nodes[1].service",
+        "kind": "scalar",
+        "value": "kv"
+      },
+      {
+        "path": "harness.nodes[2].compose_service",
+        "kind": "scalar",
+        "value": "kv-n3"
+      },
+      {
+        "path": "harness.nodes[2].id",
+        "kind": "scalar",
+        "value": "kv-n3"
+      },
+      {
+        "path": "harness.nodes[2].port_env",
+        "kind": "scalar",
+        "value": "KV_PORT_N3"
+      },
+      {
+        "path": "harness.nodes[2].role_hint",
+        "kind": "scalar",
+        "value": "replica"
+      },
+      {
+        "path": "harness.nodes[2].service",
+        "kind": "scalar",
+        "value": "kv"
+      },
+      {
+        "path": "harness.steady_state.probe",
+        "kind": "scalar",
+        "value": "docker compose exec -T kv-n1 /kv steady --targets http://kv-n1:8080,http://kv-n2:8080,http://kv-n3:8080 --timeout 55s"
+      },
+      {
+        "path": "harness.steady_state.timeout",
+        "kind": "scalar",
+        "value": "60s"
+      },
+      {
+        "path": "harness.variant_env",
+        "kind": "scalar",
+        "value": "KV_VARIANT"
+      },
+      {
+        "path": "oracles.builtin",
+        "kind": "scalar",
+        "value": "availability_after_heal"
+      },
+      {
+        "path": "oracles.builtin",
+        "kind": "scalar",
+        "value": "no_crash"
+      },
+      {
+        "path": "oracles.builtin",
+        "kind": "scalar",
+        "value": "no_panic_log"
+      },
+      {
+        "path": "oracles.builtin",
+        "kind": "scalar",
+        "value": "no_stuck_op"
+      },
+      {
+        "path": "oracles.dir",
+        "kind": "scalar",
+        "value": ".synthesis/oracles"
+      },
+      {
+        "path": "perturber.allow",
+        "kind": "scalar",
+        "value": "net.partition"
+      },
+      {
+        "path": "perturber.budget.max_concurrent_faults",
+        "kind": "scalar",
+        "value": "1"
+      },
+      {
+        "path": "perturber.budget.max_faults_per_world",
+        "kind": "scalar",
+        "value": "1"
+      },
+      {
+        "path": "perturber.constraints",
+        "kind": "scalar",
+        "value": "never partition more than minority of kv"
+      },
+      {
+        "path": "perturber.deny",
+        "kind": "empty_seq",
+        "value": ""
+      },
+      {
+        "path": "profiles.buggy.budget",
+        "kind": "scalar",
+        "value": "10m"
+      },
+      {
+        "path": "profiles.buggy.driver_profile",
+        "kind": "scalar",
+        "value": "linear"
+      },
+      {
+        "path": "profiles.buggy.faults",
+        "kind": "scalar",
+        "value": "net.partition(role:leader)@3000..7500"
+      },
+      {
+        "path": "profiles.buggy.variant",
+        "kind": "scalar",
+        "value": "buggy"
+      },
+      {
+        "path": "profiles.buggy.worlds",
+        "kind": "scalar",
+        "value": "1"
+      },
+      {
+        "path": "profiles.patched.budget",
+        "kind": "scalar",
+        "value": "10m"
+      },
+      {
+        "path": "profiles.patched.driver_profile",
+        "kind": "scalar",
+        "value": "linear"
+      },
+      {
+        "path": "profiles.patched.faults",
+        "kind": "scalar",
+        "value": "net.partition(role:leader)@3000..7500"
+      },
+      {
+        "path": "profiles.patched.variant",
+        "kind": "scalar",
+        "value": "kvfixed"
+      },
+      {
+        "path": "profiles.patched.worlds",
+        "kind": "scalar",
+        "value": "2"
+      }
+    ],
+    "topology": {
+      "path": "docker-compose.yaml",
+      "sha256": "sha256:dd355e5e2b4675b8d282ce8284e99c732200ede39f5641c53eace6ee80a6f3cc",
+      "size": 2380
+    }
+  }
+}

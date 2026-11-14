@@ -1,5 +1,5 @@
 // Command loadgen is the fixture's workload driver. It emits the normative
-// PRO-THESIS history log (JSONL) and nothing else.
+// Synthesis history log (JSONL) and nothing else.
 //
 // Normative invocation (the frozen driver.cmd template):
 //
@@ -106,7 +106,7 @@ func run(args []string) (int, error) {
 	fs.StringVar(&o.historyPath, "history", "", "path to the history JSONL to write (normative)")
 	seed := fs.Uint64("seed", 0, "world seed (normative)")
 	fs.StringVar(&o.profileName, "profile", "", "driver profile NAME (normative)")
-	// The default targets come from PROTHESIS_TARGETS when the harness set it.
+	// The default targets come from SYNTHESIS_TARGETS when the harness set it.
 	//
 	// The frozen driver.cmd template carries {history_path}, {seed} and
 	// {profile} and nothing that can differ per world, so a harness running
@@ -118,12 +118,12 @@ func run(args []string) (int, error) {
 	//
 	// Same dual-transport shape as --stdin-control below.
 	defaultTargets := "127.0.0.1:18081,127.0.0.1:18082,127.0.0.1:18083"
-	if t := strings.TrimSpace(os.Getenv("PROTHESIS_TARGETS")); t != "" {
+	if t := strings.TrimSpace(os.Getenv("SYNTHESIS_TARGETS")); t != "" {
 		defaultTargets = t
 	}
 	targets := fs.String("targets", defaultTargets,
 		"comma-separated client-plane targets (host:port or full URL); "+
-			"defaults to $PROTHESIS_TARGETS when set")
+			"defaults to $SYNTHESIS_TARGETS when set")
 	fs.IntVar(&o.clients, "clients", 0, "override the profile's client count")
 	fs.IntVar(&o.ops, "ops", 0, "override the profile's operation budget")
 	fs.IntVar(&o.keys, "keys", 0, "override the profile's key space")
@@ -135,7 +135,7 @@ func run(args []string) (int, error) {
 	fs.IntVar(&o.thinkMaxMS, "think-max-ms", 2, "maximum per-client think time")
 	fs.IntVar(&o.leaseReadPPT, "lease-read-ppt", 900,
 		"parts per thousand of reads issued with the default (lease) consistency")
-	fs.BoolVar(&o.stdinControl, "stdin-control", os.Getenv("PROTHESIS_STDIN_CONTROL") == "1",
+	fs.BoolVar(&o.stdinControl, "stdin-control", os.Getenv("SYNTHESIS_STDIN_CONTROL") == "1",
 		`stop on stdin EOF or a {"cmd":"stop"} line`)
 	fs.BoolVar(&o.quiet, "quiet", false, "suppress the run banner on stderr")
 	if err := fs.Parse(args); err != nil {

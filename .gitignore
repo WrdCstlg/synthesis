@@ -8,8 +8,6 @@
 # Ephemeral run artifacts
 /.synthesis/runs/
 /testdata/kvfixture/.synthesis/runs/
-/.prothesis/runs/
-/testdata/kvfixture/.prothesis/runs/
 
 # Local test/coverage scratch
 coverage.txt

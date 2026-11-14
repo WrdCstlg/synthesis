@@ -1,7 +1,7 @@
-// Command synthesis-oracle-linearizable is PRO-THESIS's linearizability checker
+// Command synthesis-oracle-linearizable is Synthesis's linearizability checker
 // for the KV register model, packaged as an EXTERNAL oracle (Phase 3 brief D-E).
 //
-// It reads prothesis.oracle_input/v1 on stdin, writes prothesis.oracle_output/v1
+// It reads synthesis.oracle_input/v1 on stdin, writes synthesis.oracle_output/v1
 // on stdout, and exits 0 (ok), 1 (violated) or 2 (inconclusive). It declares
 // itself as oracle "linearizable.kv", class "consistency", valid in ASSERT.
 // Phase validity is ENFORCED BY THE ENGINE, not here: this program declares
@@ -64,7 +64,7 @@ import (
 )
 
 // The oracle's own declaration. These three values are its identity in the
-// verdict, in .prothesis/lock and in the engine's phase-validity check.
+// verdict, in .synthesis/lock and in the engine's phase-validity check.
 const (
 	oracleName  = "linearizable.kv"
 	oracleClass = schema.ClassConsistency
@@ -74,9 +74,9 @@ func oracleValidPhases() []schema.Phase { return []schema.Phase{schema.PhaseAsse
 
 // Environment fallbacks, for a runner that passes no arguments.
 const (
-	envWall      = "PROTHESIS_ORACLE_WALL"
-	envMaxStates = "PROTHESIS_ORACLE_MAX_STATES"
-	envMemoBytes = "PROTHESIS_ORACLE_MAX_MEMO_BYTES"
+	envWall      = "SYNTHESIS_ORACLE_WALL"
+	envMaxStates = "SYNTHESIS_ORACLE_MAX_STATES"
+	envMemoBytes = "SYNTHESIS_ORACLE_MAX_MEMO_BYTES"
 )
 
 func main() {
@@ -100,7 +100,7 @@ func stamp(s string) string {
 }
 
 // run is main's testable core. It ALWAYS writes a valid
-// prothesis.oracle_output/v1 to stdout, and its exit code always agrees with the
+// synthesis.oracle_output/v1 to stdout, and its exit code always agrees with the
 // status in that document.
 func run(stdin io.Reader, stdout, stderr io.Writer, args []string, start time.Time) schema.OracleExitCode {
 	opt, err := parseOptions(args, stderr)

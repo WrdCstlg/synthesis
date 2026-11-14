@@ -42,7 +42,7 @@ func (d Duration) Milliseconds() int64 { return time.Duration(d).Milliseconds() 
 func (d Duration) IsZero() bool { return d == 0 }
 
 // String renders the duration the way time.Duration does, so "90s" re-emits as
-// "1m30s". The tool never rewrites a user's prothesis.yaml, so the
+// "1m30s". The tool never rewrites a user's synthesis.yaml, so the
 // normalization is visible only in effective-config dumps, where the normalized
 // semantic value is exactly what should be shown.
 func (d Duration) String() string { return time.Duration(d).String() }

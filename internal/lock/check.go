@@ -13,7 +13,7 @@ import (
 
 // GateOptions are the inputs to the enforcement point.
 type GateOptions struct {
-	// ProjectDir is the directory holding synthesis.yaml and .prothesis/.
+	// ProjectDir is the directory holding synthesis.yaml and .synthesis/.
 	ProjectDir string
 	// ConfigPath is the synthesis.yaml to project. Empty means
 	// <ProjectDir>/synthesis.yaml.
@@ -91,8 +91,8 @@ type Report struct {
 
 // Gate is THE enforcement point (D-I).
 //
-// `thesis run` calls it before booting anything (there is no point starting a
-// cluster for a run whose verdict is already void) and Phase 6's `thesis gate`
+// `synthesis run` calls it before booting anything (there is no point starting a
+// cluster for a run whose verdict is already void) and Phase 6's `synthesis gate`
 // wraps this same function rather than reimplementing it.
 //
 // It returns an error only for conditions under which drift cannot be
@@ -221,7 +221,7 @@ func Gate(opts GateOptions) (*Report, error) {
 	return rep, nil
 }
 
-// EnforceExitCode is the code `thesis run` returns for this report.
+// EnforceExitCode is the code `synthesis run` returns for this report.
 //
 // Only a MISMATCH blocks. An absent lock does not: the drift check has never
 // been baselined for this project, which is reported honestly in the verdict as

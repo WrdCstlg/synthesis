@@ -55,7 +55,7 @@ func (c Change) String() string {
 		return fmt.Sprintf("config CHANGED:       %s: %s -> %s", c.Subject, c.Was, c.Now)
 	case ChangeSchema:
 		return fmt.Sprintf("manifest schema:      %s -> %s (the LOCK FORMAT changed, not your config; "+
-			"re-lock with a reason naming the thesis version)", c.Was, c.Now)
+			"re-lock with a reason naming the synthesis version)", c.Was, c.Now)
 	case ChangeFileAdded:
 		return fmt.Sprintf("file ADDED:           %s (%s)", c.Subject, c.Now)
 	case ChangeFileRemoved:

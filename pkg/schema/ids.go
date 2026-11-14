@@ -9,7 +9,7 @@ import (
 // Identifier shapes, transcribed from the directive's worked examples:
 //
 //	run id          r_2026_09_03_a41f   (4.6)
-//	world filename  w_a41f.thesis       (4.6, minimal_repro.world)
+//	world filename  w_a41f.synthesis    (4.6, minimal_repro.world)
 const (
 	// RunIDPrefix begins every run id.
 	RunIDPrefix = "r_"
@@ -17,12 +17,12 @@ const (
 	WorldIDPrefix = "w_"
 	// WorldFileExt is the world file extension. It is covered by
 	// .gitattributes as `text eol=lf`.
-	WorldFileExt = ".thesis"
+	WorldFileExt = ".synthesis"
 	// ShortIDLen is the number of hex digits in a short id.
 	ShortIDLen = 4
 	// RunIDShape and WorldFileShape are used in error messages.
 	RunIDShape     = "r_YYYY_MM_DD_xxxx"
-	WorldFileShape = "w_xxxx.thesis"
+	WorldFileShape = "w_xxxx.synthesis"
 
 	runIDDateLayout = "2006_01_02"
 )

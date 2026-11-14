@@ -4,7 +4,7 @@ package raft
 //
 // math/rand and math/rand/v2 do not guarantee a stable value sequence across Go
 // versions, and the fixture's election-timeout randomisation is part of what a
-// PRO-THESIS world claims to reproduce. A three-line splitmix64 that will
+// Synthesis world claims to reproduce. A three-line splitmix64 that will
 // produce the same bytes in ten years is worth more here than any library.
 
 const (

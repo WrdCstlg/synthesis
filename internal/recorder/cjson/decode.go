@@ -42,7 +42,7 @@ func Unmarshal(data []byte, v any) error {
 //
 // This is rule 8, and it is what makes byte-identity a runtime invariant rather
 // than a property some test happens to check. Every Load path in the tree goes
-// through here: a non-canonical `.thesis` file is rejected at the point of use,
+// through here: a non-canonical `.synthesis` file is rejected at the point of use,
 // so a corrupted or hand-edited world can never silently participate in a run.
 func UnmarshalCanonical(data []byte, v any) error {
 	if err := Unmarshal(data, v); err != nil {
@@ -161,7 +161,7 @@ func withPath(err error, path string) error {
 // happens to reach: a nil pointer to a struct containing a float, or an empty
 // slice of maps, would encode cleanly and then fail years later on the one
 // world that populated it. Lint is the static check, and every schema type that
-// participates in a `.thesis` file has a test asserting Lint passes on it.
+// participates in a `.synthesis` file has a test asserting Lint passes on it.
 func Lint(v any) error {
 	return lintType(reflect.TypeOf(v), "", map[reflect.Type]bool{})
 }

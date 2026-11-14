@@ -23,10 +23,10 @@ import (
 //
 // ADDITIVE. The directive names `.synthesis/lock` and the verdict's
 // `oracle_lock.manifest_sha` but fixes no internal schema for either, so this
-// identifier is chosen to match the `prothesis.*` family. Logged as design record.
+// identifier is chosen to match the `synthesis.*` family. Logged as design record.
 //
 // v2 adds Files, the compose file's content, and five covered keys.
-const ManifestSchema = "prothesis.lock_manifest/v2"
+const ManifestSchema = "synthesis.lock_manifest/v2"
 
 // Manifest is the digested projection: what the lock actually covers.
 //

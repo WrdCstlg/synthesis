@@ -1,4 +1,4 @@
-version: prothesis/v1
+version: synthesis/v1
 name: kvfixture
 
 harness:

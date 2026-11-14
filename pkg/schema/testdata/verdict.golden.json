@@ -1,5 +1,5 @@
 {
-  "schema": "prothesis.verdict/v1",
+  "schema": "synthesis.verdict/v1",
   "run_id": "r_2026_09_28_a41f",
   "profile": "buggy",
   "commit": "02ce6d6",

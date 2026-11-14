@@ -313,7 +313,7 @@ func TestFreshLeaderHasNoLeaseUntilQuorumAck(t *testing.T) {
 
 // Three nodes given the SAME world seed must still draw three different
 // election timeouts. If they did not, every election would be a guaranteed
-// split vote and `thesis up` would flake the moment the harness started
+// split vote and `synthesis up` would flake the moment the harness started
 // varying seeds.
 func TestSameWorldSeedYieldsDistinctElectionTimeouts(t *testing.T) {
 	c := newCluster(t, []string{"kv-n1", "kv-n2", "kv-n3"}, defaultOpts(4242))

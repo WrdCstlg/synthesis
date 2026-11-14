@@ -10,7 +10,7 @@ import (
 	"synthesis.dev/synthesis/pkg/schema"
 )
 
-const sampleConfigYAML = `version: prothesis/v1
+const sampleConfigYAML = `version: synthesis/v1
 name: kvfixture
 harness:
   backend: compose
@@ -48,7 +48,7 @@ profiles:
 artifacts: { dir: .synthesis/runs }
 `
 
-const sampleOracleYAML = `version: prothesis.oracle_def/v1
+const sampleOracleYAML = `version: synthesis.oracle_def/v1
 name: linearizable.kv
 class: consistency
 valid_phases: [DRIVE, HEAL, QUIESCE, ASSERT]

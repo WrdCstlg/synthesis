@@ -1,8 +1,8 @@
-// Package cjson implements the canonical JSON profile that PRO-THESIS `.thesis`
+// Package cjson implements the canonical JSON profile that Synthesis `.synthesis`
 // world files are written in.
 //
 // Every rule below is mandatory because a world configuration must round-trip
-// through `.thesis` serialization byte-identically — that is, this encoder is a
+// through `.synthesis` serialization byte-identically — that is, this encoder is a
 // bijection on the language its decoder accepts.
 //
 //  1. Object keys are sorted ascending by byte order. Struct fields are sorted
@@ -45,7 +45,7 @@ import (
 // separately from a generic syntax error because on Windows it has exactly one
 // cause and exactly one fix.
 var ErrCRLF = errors.New("cjson: CR byte in input: git has translated line endings. " +
-	"Check .gitattributes (`*.thesis text eol=lf`) and `git config core.autocrlf`")
+	"Check .gitattributes (`*.synthesis text eol=lf`) and `git config core.autocrlf`")
 
 // ErrBOM is returned when input starts with a UTF-8 byte-order mark.
 var ErrBOM = errors.New("cjson: input starts with a UTF-8 BOM; canonical documents have none")

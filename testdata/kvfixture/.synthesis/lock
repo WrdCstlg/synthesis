@@ -1,6 +1,6 @@
 {
-  "schema": "prothesis.lock/v1",
-  "manifest_sha": "sha256:20b3b4bc69b50fabca35f573e61618162651a2ecf3571036340096ec6fd641e1",
+  "schema": "synthesis.lock/v1",
+  "manifest_sha": "sha256:e03093ed97fcb203d2f4d8ec142ca1671824d30f83322d887d98f5ce2a27112e",
   "reason": "initial locked baseline for kvfixture public demonstration (AT-1..AT-3)",
   "locked_at": "2026-11-10T00:00:00Z",
   "tool_version": "0.1.0-demo",
@@ -26,14 +26,14 @@
     "File modes are not covered. The executable bit does not survive a Windows checkout, so hashing it would fire a spurious ORACLE_DRIFT on a cross-platform clone.",
     "Built-in oracle thresholds are compiled in and reachable from no config key. builtin_options_fingerprint records them for review but is OUTSIDE the digest: including it would turn any release that adjusts a default into exit 4 on every downstream project at once. `synthesis verify-lock` reports a moved fingerprint as a warning, never as drift.",
     "The driver is covered by its COMMAND and by the driver profiles a run profile names . A driver profile no run profile names is not covered, because it is not the gate's workload and covering it would fire exit 4 on routine edits. The driver's PROGRAM is fingerprinted in the `executables` block as `driver.cmd`, outside the digest, so a rebuilt or swapped driver is a WARNING and not drift. Neither the workload a driver compiles in for a profile name nor the environment it inherits is covered: a driver that reads its workload from its own table or from environment variables can still be changed without moving this digest.",
-    "The digest covers the USER-SUPPLIED synthesis.yaml with defaults NOT applied. A key you did not write contributes nothing, so upgrading thesis cannot move this digest by changing a compiled-in default."
+    "The digest covers the USER-SUPPLIED synthesis.yaml with defaults NOT applied. A key you did not write contributes nothing, so upgrading synthesis cannot move this digest by changing a compiled-in default."
   ],
   "manifest": {
-    "schema": "prothesis.lock_manifest/v2",
+    "schema": "synthesis.lock_manifest/v2",
     "oracles": [
       {
         "path": "linearizable.kv.yaml",
-        "sha256": "sha256:d7ee7be132a3e2827e061305eeecd05c33a0077f394e96c79000441064953969",
+        "sha256": "sha256:08112c9330d8f512ebacbd510a295fdddb3bf4eb44e4a99f5b6e50215dedbd16",
         "size": 2920
       }
     ],

@@ -41,10 +41,10 @@ func TestResolveUnknownProfileIsAnError(t *testing.T) {
 // a value that does not govern the run.
 func TestEnvironmentOverridesBuiltin(t *testing.T) {
 	p, err := Resolve("gate", envMap(map[string]string{
-		"PROTHESIS_CLIENTS":   "3",
-		"PROTHESIS_OPS":       "77",
-		"PROTHESIS_MIX_READ":  "900",
-		"PROTHESIS_MIX_WRITE": "100",
+		"SYNTHESIS_CLIENTS":   "3",
+		"SYNTHESIS_OPS":       "77",
+		"SYNTHESIS_MIX_READ":  "900",
+		"SYNTHESIS_MIX_WRITE": "100",
 	}))
 	if err != nil {
 		t.Fatalf("resolve: %v", err)
@@ -62,10 +62,10 @@ func TestEnvironmentOverridesBuiltin(t *testing.T) {
 
 func TestResolveUnknownNameWithFullEnvIsAccepted(t *testing.T) {
 	p, err := Resolve("custom", envMap(map[string]string{
-		"PROTHESIS_CLIENTS":  "2",
-		"PROTHESIS_OPS":      "10",
-		"PROTHESIS_KEYS":     "4",
-		"PROTHESIS_MIX_READ": "1000",
+		"SYNTHESIS_CLIENTS":  "2",
+		"SYNTHESIS_OPS":      "10",
+		"SYNTHESIS_KEYS":     "4",
+		"SYNTHESIS_MIX_READ": "1000",
 	}))
 	if err != nil {
 		t.Fatalf("resolve: %v", err)

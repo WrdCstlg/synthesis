@@ -37,7 +37,7 @@ func strictEnumYAML(n *yaml.Node, kind string, allowEmpty bool, ok func(string) 
 	return s, nil
 }
 
-// VerdictResult is the `verdict` field of prothesis.verdict/v1.
+// VerdictResult is the `verdict` field of synthesis.verdict/v1.
 type VerdictResult string
 
 const (
@@ -92,7 +92,7 @@ func (v *VerdictResult) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// OracleClass is the `class` field of prothesis.oracle_output/v1 and a verdict violation.
+// OracleClass is the `class` field of synthesis.oracle_output/v1 and a verdict violation.
 type OracleClass string
 
 const (
@@ -139,7 +139,7 @@ func (c *OracleClass) UnmarshalYAML(n *yaml.Node) error {
 	return nil
 }
 
-// OracleStatus is the `status` field of prothesis.oracle_output/v1.
+// OracleStatus is the `status` field of synthesis.oracle_output/v1.
 type OracleStatus string
 
 const (
@@ -253,7 +253,7 @@ func (t *HistoryType) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// LockStatus is `oracle_lock.status` in prothesis.verdict/v1.
+// LockStatus is `oracle_lock.status` in synthesis.verdict/v1.
 type LockStatus string
 
 const (

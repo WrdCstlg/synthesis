@@ -14,8 +14,8 @@ import (
 // not assume phase_timings partitions the timeline.
 //
 // The empty Phase is a representable value meaning "not scoped to a phase". It
-// is accepted on decode so that a verdict PRO-THESIS emits can be read back by
-// PRO-THESIS: prothesis.verdict/v1 is a total contract with no omitempty, so a
+// is accepted on decode so that a verdict Synthesis emits can be read back by
+// Synthesis: synthesis.verdict/v1 is a total contract with no omitempty, so a
 // violation that is not phase-scoped emits `"phase":""`. Valid() is false for
 // the empty phase; each Validate decides whether "unscoped" is legal there.
 type Phase string
@@ -110,8 +110,8 @@ func (p *Phase) UnmarshalYAML(n *yaml.Node) error {
 	return nil
 }
 
-// PhaseWindow is one entry of `phases` (prothesis.oracle_input/v1) and of
-// `phase_timings` (the .thesis world file).
+// PhaseWindow is one entry of `phases` (synthesis.oracle_input/v1) and of
+// `phase_timings` (the .synthesis world file).
 //
 // Times are MILLISECONDS relative to DRIVE start, which is the virtual clock
 // origin: directive 4.5 shows `{"phase":"DRIVE","start_ms":0,...}`. Windows

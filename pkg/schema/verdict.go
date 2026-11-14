@@ -7,7 +7,7 @@ import (
 	"sort"
 )
 
-// Verdict is the minimal prothesis.verdict/v1 document emitted by synthesis.
+// Verdict is the minimal synthesis.verdict/v1 document emitted by synthesis.
 // Only fields produced by the public demonstration are included.
 type Verdict struct {
 	Schema     string        `json:"schema"`

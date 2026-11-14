@@ -5,19 +5,19 @@ package schema
 
 const (
 	// ConfigVersion is the required value of synthesis.yaml `version`.
-	ConfigVersion = "prothesis/v1"
+	ConfigVersion = "synthesis/v1"
 
 	// VerdictSchema identifies a verdict.json document.
-	VerdictSchema = "prothesis.verdict/v1"
+	VerdictSchema = "synthesis.verdict/v1"
 
 	// OracleInputSchema identifies the JSON document written to an oracle's stdin.
-	OracleInputSchema = "prothesis.oracle_input/v1"
+	OracleInputSchema = "synthesis.oracle_input/v1"
 
 	// OracleOutputSchema identifies the JSON document written to an oracle's stdout.
-	OracleOutputSchema = "prothesis.oracle_output/v1"
+	OracleOutputSchema = "synthesis.oracle_output/v1"
 
 	// OracleDefVersion identifies an external oracle YAML declaration.
-	OracleDefVersion = "prothesis.oracle_def/v1"
+	OracleDefVersion = "synthesis.oracle_def/v1"
 
 	// ToolName is the CLI binary name.
 	ToolName = "synthesis"

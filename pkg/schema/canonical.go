@@ -27,7 +27,7 @@ func marshalNoEscape(v any) ([]byte, error) {
 	return bytes.TrimRight(buf.Bytes(), "\n"), nil
 }
 
-// Canonicalize rewrites valid JSON into PRO-THESIS canonical form:
+// Canonicalize rewrites valid JSON into Synthesis canonical form:
 //
 //   - object members sorted by key in byte order (every schema key is ASCII)
 //   - no insignificant whitespace
@@ -131,7 +131,7 @@ func HashBytes(b []byte) string {
 }
 
 // indentJSON re-indents compact JSON with two spaces and a single trailing
-// newline. Used for artifacts humans read and diff (the verdict); the .thesis
+// newline. Used for artifacts humans read and diff (the verdict); the .synthesis
 // world file is emitted compact and canonical instead, because its byte
 // identity is a hashed contract.
 func indentJSON(b []byte) ([]byte, error) {

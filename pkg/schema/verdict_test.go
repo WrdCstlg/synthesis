@@ -21,11 +21,11 @@ func readTestdata(t *testing.T, name string) []byte {
 		)
 	case "oracle_input.golden.json":
 		return []byte(`{
-  "schema": "prothesis.oracle_input/v1",
+  "schema": "synthesis.oracle_input/v1",
   "history_path": "/path/to/history.jsonl",
   "final_state_path": "/path/to/final_state.json",
   "telemetry_path": "/path/to/telemetry.json",
-  "world_path": "/path/to/world.thesis",
+  "world_path": "/path/to/world.synthesis",
   "phases": [
     {"phase": "DRIVE", "start_ms": 0, "end_ms": 42000},
     {"phase": "HEAL", "start_ms": 42000, "end_ms": 45000},
@@ -36,7 +36,7 @@ func readTestdata(t *testing.T, name string) []byte {
 `)
 	case "oracle_output.golden.json":
 		return []byte(`{
-  "schema": "prothesis.oracle_output/v1",
+  "schema": "synthesis.oracle_output/v1",
   "oracle": "linearizable.kv",
   "class": "consistency",
   "valid_phases": ["ASSERT"],

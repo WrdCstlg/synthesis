@@ -7,14 +7,14 @@
 //	./bin/loadgen --history {history_path} --seed {seed} --profile {profile}
 //
 // and {profile} carries only the profile's NAME. The rich profile definition in
-// prothesis.yaml -- clients, ops, mix -- has no path to the driver through that
+// synthesis.yaml -- clients, ops, mix -- has no path to the driver through that
 // template. Three consequences, handled explicitly rather than papered over:
 //
 //  1. The driver must resolve the parameters itself. It does so from the table
 //     below, which is documented in the fixture README so the mapping is
 //     auditable.
 //  2. A harness that CAN pass the resolved profile should, and this package
-//     accepts it through PROTHESIS_* environment variables, which need no
+//     accepts it through SYNTHESIS_* environment variables, which need no
 //     change to the frozen template. Environment values win over the table.
 //  3. An unknown profile name with no environment override is a CONFIG error
 //     (exit 5). It must never fall back to a built-in default, because a
@@ -106,7 +106,7 @@ func Names() []string {
 type ErrUnknownProfile struct{ Name string }
 
 func (e *ErrUnknownProfile) Error() string {
-	return fmt.Sprintf("unknown driver profile %q; known profiles: %s (set PROTHESIS_CLIENTS/PROTHESIS_OPS/PROTHESIS_MIX_* to supply one explicitly)",
+	return fmt.Sprintf("unknown driver profile %q; known profiles: %s (set SYNTHESIS_CLIENTS/SYNTHESIS_OPS/SYNTHESIS_MIX_* to supply one explicitly)",
 		e.Name, strings.Join(Names(), ", "))
 }
 
@@ -124,33 +124,33 @@ func Resolve(name string, env func(string) string) (Profile, error) {
 	}
 
 	overrode := false
-	if v := env("PROTHESIS_CLIENTS"); v != "" {
+	if v := env("SYNTHESIS_CLIENTS"); v != "" {
 		n, err := strconv.Atoi(v)
 		if err != nil || n <= 0 {
-			return Profile{}, fmt.Errorf("PROTHESIS_CLIENTS must be a positive integer, got %q", v)
+			return Profile{}, fmt.Errorf("SYNTHESIS_CLIENTS must be a positive integer, got %q", v)
 		}
 		p.Clients, overrode = n, true
 	}
-	if v := env("PROTHESIS_OPS"); v != "" {
+	if v := env("SYNTHESIS_OPS"); v != "" {
 		n, err := strconv.Atoi(v)
 		if err != nil || n <= 0 {
-			return Profile{}, fmt.Errorf("PROTHESIS_OPS must be a positive integer, got %q", v)
+			return Profile{}, fmt.Errorf("SYNTHESIS_OPS must be a positive integer, got %q", v)
 		}
 		p.Ops, overrode = n, true
 	}
-	if v := env("PROTHESIS_KEYS"); v != "" {
+	if v := env("SYNTHESIS_KEYS"); v != "" {
 		n, err := strconv.Atoi(v)
 		if err != nil || n <= 0 {
-			return Profile{}, fmt.Errorf("PROTHESIS_KEYS must be a positive integer, got %q", v)
+			return Profile{}, fmt.Errorf("SYNTHESIS_KEYS must be a positive integer, got %q", v)
 		}
 		p.Keys, overrode = n, true
 	}
 	mixSet := false
 	for key, dst := range map[string]*int{
-		"PROTHESIS_MIX_READ":  &p.Mix.Read,
-		"PROTHESIS_MIX_WRITE": &p.Mix.Write,
-		"PROTHESIS_MIX_TXN":   &p.Mix.Txn,
-		"PROTHESIS_MIX_ADMIN": &p.Mix.Admin,
+		"SYNTHESIS_MIX_READ":  &p.Mix.Read,
+		"SYNTHESIS_MIX_WRITE": &p.Mix.Write,
+		"SYNTHESIS_MIX_TXN":   &p.Mix.Txn,
+		"SYNTHESIS_MIX_ADMIN": &p.Mix.Admin,
 	} {
 		v := env(key)
 		if v == "" {

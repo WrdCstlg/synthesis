@@ -16,7 +16,7 @@ func TestGoldenOracleInput(t *testing.T) {
 	if in.HistoryPath != "/path/to/history.jsonl" ||
 		in.FinalStatePath != "/path/to/final_state.json" ||
 		in.TelemetryPath != "/path/to/telemetry.json" ||
-		in.WorldPath != "/path/to/world.thesis" {
+		in.WorldPath != "/path/to/world.synthesis" {
 		t.Errorf("oracle input paths = %+v", *in)
 	}
 	if len(in.Phases) != 4 {
@@ -93,11 +93,11 @@ func TestGoldenOracleOutput(t *testing.T) {
 }
 
 // TestOracleStatusReconciliationIsFailClosed is the invariant I6 test: given an
-// oracle's two independent result channels, PRO-THESIS never adopts the weaker
+// oracle's two independent result channels, Synthesis never adopts the weaker
 // reading of a disagreement.
 func TestOracleStatusReconciliationIsFailClosed(t *testing.T) {
 	body := func(status string) []byte {
-		return []byte(`{"schema":"prothesis.oracle_output/v1","oracle":"x","class":"crash",` +
+		return []byte(`{"schema":"synthesis.oracle_output/v1","oracle":"x","class":"crash",` +
 			`"valid_phases":["ASSERT"],"status":"` + status + `","explanation":"e"}`)
 	}
 
@@ -121,13 +121,13 @@ func TestOracleStatusReconciliationIsFailClosed(t *testing.T) {
 		{"garbage stdout, exits ok", []byte("boom\n"), 0, StatusInconclusive},
 		{"wrong schema, exits ok", []byte(`{"schema":"other.oracle_output/v1"}`), 0, StatusInconclusive},
 		{"malformed witness, exits ok",
-			[]byte(`{"schema":"prothesis.oracle_output/v1","status":"ok","witness":{"op_ids":["a"]}}`),
+			[]byte(`{"schema":"synthesis.oracle_output/v1","status":"ok","witness":{"op_ids":["a"]}}`),
 			0, StatusInconclusive},
 		{"unknown status, exits ok",
-			[]byte(`{"schema":"prothesis.oracle_output/v1","status":"probably_fine"}`),
+			[]byte(`{"schema":"synthesis.oracle_output/v1","status":"probably_fine"}`),
 			0, StatusInconclusive},
 		{"no status at all, exits ok",
-			[]byte(`{"schema":"prothesis.oracle_output/v1","oracle":"x"}`), 0, StatusInconclusive},
+			[]byte(`{"schema":"synthesis.oracle_output/v1","oracle":"x"}`), 0, StatusInconclusive},
 
 		{"crashed with 137", body("ok"), 137, StatusInconclusive},
 		{"exits 3", body("ok"), 3, StatusInconclusive},

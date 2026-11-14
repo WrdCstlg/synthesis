@@ -10,8 +10,8 @@ import (
 // ---------------------------------------------------------------------------
 // The external oracle contract (directive 4.5)
 //
-// An oracle is an executable. It reads prothesis.oracle_input/v1 on stdin,
-// writes prothesis.oracle_output/v1 on stdout, and exits 0 (OK), 1 (VIOLATED)
+// An oracle is an executable. It reads synthesis.oracle_input/v1 on stdin,
+// writes synthesis.oracle_output/v1 on stdout, and exits 0 (OK), 1 (VIOLATED)
 // or 2 (INCONCLUSIVE).
 // ---------------------------------------------------------------------------
 
@@ -46,7 +46,7 @@ func (c OracleExitCode) Status() OracleStatus {
 	}
 }
 
-// OracleInput is prothesis.oracle_input/v1, the document written to an
+// OracleInput is synthesis.oracle_input/v1, the document written to an
 // oracle's stdin.
 type OracleInput struct {
 	Schema      string `json:"schema"`
@@ -112,7 +112,7 @@ func MarshalOracleInput(in *OracleInput) ([]byte, error) {
 }
 
 // UnmarshalOracleInput decodes the stdin document. It is strict about unknown
-// fields: this document is produced by PRO-THESIS itself, so an unknown key
+// fields: this document is produced by Synthesis itself, so an unknown key
 // means a version mismatch the oracle should report rather than ignore.
 func UnmarshalOracleInput(data []byte) (*OracleInput, error) {
 	dec := json.NewDecoder(bytes.NewReader(data))
@@ -127,7 +127,7 @@ func UnmarshalOracleInput(data []byte) (*OracleInput, error) {
 	return &in, nil
 }
 
-// OracleOutput is prothesis.oracle_output/v1, the document an oracle writes to
+// OracleOutput is synthesis.oracle_output/v1, the document an oracle writes to
 // stdout.
 type OracleOutput struct {
 	Schema string `json:"schema"`
@@ -183,7 +183,7 @@ func ParseOracleOutput(data []byte) (*OracleOutput, error) {
 // returns a usable output.
 //
 // The reconciliation rule is fail-closed (invariant I6): the result is the
-// WORSE of the two readings, ordered ok < inconclusive < violated. PRO-THESIS
+// WORSE of the two readings, ordered ok < inconclusive < violated. Synthesis
 // never adopts the weaker reading of a disagreement, because in an agentic loop
 // the weaker reading is exactly the one an adversary would arrange:
 //

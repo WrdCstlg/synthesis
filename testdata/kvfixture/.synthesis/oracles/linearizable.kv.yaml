@@ -1,4 +1,4 @@
-# prothesis.oracle_def/v1 -- the per-key linearizability checker.
+# synthesis.oracle_def/v1 -- the per-key linearizability checker.
 #
 # This file is covered by .synthesis/lock. Editing ANY byte of it moves the
 # manifest digest and makes `synthesis run` exit 4 (ORACLE_DRIFT) before it boots a
@@ -20,7 +20,7 @@
 # of signing makes it impossible — and only the program is fingerprinted, not
 # its interpreter or anything it loads at run time.
 
-version: prothesis.oracle_def/v1
+version: synthesis.oracle_def/v1
 
 # Appears verbatim in the verdict's violations[].oracle. The checker prints the
 # same string in its output document; a mismatch means the wrong binary is
@@ -45,7 +45,7 @@ valid_phases: [ASSERT]
 # suffix is supplied automatically, so this stays portable.
 #
 # Nothing is substituted into an oracle's command line. The checker receives
-# prothesis.oracle_input/v1 on STDIN and writes prothesis.oracle_output/v1 on
+# synthesis.oracle_input/v1 on STDIN and writes synthesis.oracle_output/v1 on
 # STDOUT, exiting 0 (ok), 1 (violated) or 2 (inconclusive).
 cmd: "./bin/linearizable-kv"
 

@@ -7,7 +7,7 @@ import "time"
 // LeaseDuration is THE INJECTED DEFECT.
 //
 // This is the ONLY deliberate defect in the fixture. Everything else in
-// internal/raft and internal/kv is meant to be correct; if PRO-THESIS finds a
+// internal/raft and internal/kv is meant to be correct; if Synthesis finds a
 // safety violation that is not explained by this constant, that is a bug in the
 // fixture and must be fixed, not celebrated.
 //

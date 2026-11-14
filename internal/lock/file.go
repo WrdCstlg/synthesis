@@ -22,7 +22,7 @@ const FileName = "lock"
 // ADDITIVE, like ManifestSchema: the directive names the PATH `.synthesis/lock`
 // and the verdict field `oracle_lock.manifest_sha`, and fixes no document
 // schema for the file itself. Logged as design record.
-const FileSchema = "prothesis.lock/v1"
+const FileSchema = "synthesis.lock/v1"
 
 // ErrNoLock is returned when the project has no lock file.
 //
@@ -49,8 +49,8 @@ func Path(projectDir string) string {
 //
 //   - Reason and LockedAt change on every bump by construction; digesting them
 //     would make the digest a function of when it was written.
-//   - ToolVersion must not be hashed, or every upgrade of `thesis` becomes an
-//     exit-4 incident on every downstream project (see cmd/thesis/version.go
+//   - ToolVersion must not be hashed, or every upgrade of `synthesis` becomes an
+//     exit-4 incident on every downstream project (see cmd/synthesis/version.go
 //     and design record.2).
 //   - BuiltinOptionsFingerprint covers COMPILED-IN thresholds reachable from no
 //     config key. It is recorded so a reviewer can see it moved, and excluded
@@ -65,7 +65,7 @@ type File struct {
 	Reason string `json:"reason"`
 	// LockedAt is RFC 3339 UTC.
 	LockedAt string `json:"locked_at"`
-	// ToolVersion is the thesis build that wrote the file. Informational.
+	// ToolVersion is the synthesis build that wrote the file. Informational.
 	ToolVersion string `json:"tool_version"`
 	// BuiltinOptionsFingerprint is internal/oracle.Options.Fingerprint at write
 	// time. Informational; outside the digest.
@@ -125,7 +125,7 @@ var Limitations = []string{
 		"covered: a driver that reads its workload from its own table or from environment " +
 		"variables can still be changed without moving this digest.",
 	"The digest covers the USER-SUPPLIED synthesis.yaml with defaults NOT applied. A key you " +
-		"did not write contributes nothing, so upgrading thesis cannot move this digest by " +
+		"did not write contributes nothing, so upgrading synthesis cannot move this digest by " +
 		"changing a compiled-in default.",
 }
 

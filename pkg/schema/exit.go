@@ -26,10 +26,10 @@ const (
 	// it. The control plane decides, and it must not map every budget expiry
 	// here. Coverage itself is a Phase 4 signal.
 	ExitBudgetExhausted ExitCode = 3
-	// ExitOracleDrift: .prothesis/lock mismatch or a gate-weakening attempt.
+	// ExitOracleDrift: .synthesis/lock mismatch or a gate-weakening attempt.
 	// Fail closed; never auto-resolve.
 	ExitOracleDrift ExitCode = 4
-	// ExitConfigError: invalid prothesis.yaml or invalid CLI arguments.
+	// ExitConfigError: invalid synthesis.yaml or invalid CLI arguments.
 	ExitConfigError ExitCode = 5
 )
 
@@ -70,7 +70,7 @@ const (
 	ActionRetryOnce AgentAction = "retry_once_then_escalate"
 	ActionSoftWarn  AgentAction = "soft_warning_do_not_merge_blind"
 	ActionEscalate  AgentAction = "stop_escalate_to_human_never_auto_resolve"
-	ActionFixConfig AgentAction = "fix_prothesis_yaml"
+	ActionFixConfig AgentAction = "fix_synthesis_yaml"
 )
 
 // AgentAction maps an exit code to the action an agent loop should take.

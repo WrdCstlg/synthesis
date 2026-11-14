@@ -21,6 +21,7 @@ import sys
 public_terms = [
     ("generic:host-user-dir", re.compile(r"[A-Za-z]:[\\/]Users[\\/]|(^|[\s\"'`])/Users/[A-Za-z0-9._-]+", re.IGNORECASE)),
     ("generic:register-id", re.compile(r"\b(D|OQ|BL|D-WS|D-PUB)-\d{2,4}\b", re.IGNORECASE)),
+    ("generic:retired-product-name", re.compile(r"(?<!syn)(?<!hypo)the[s]is", re.IGNORECASE)),
 ]
 
 private_patterns = []
@@ -128,10 +129,23 @@ if has_head:
             failures.append(f"commit {sha} does not match required author/committer identity ({expected_name} <{expected_email}>)")
 
     msgs = subprocess.check_output(["git", "log", "--format=%H%n%B%n---END---"], text=True)
+    has_legacy_root = subprocess.call(
+        ["git", "cat-file", "-e", "d03c24733659bb6bd0e4c8fa4ad507dab4e4825d"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    ) == 0
+    if has_legacy_root:
+        post_root_msgs = subprocess.check_output(
+            ["git", "log", "d03c24733659bb6bd0e4c8fa4ad507dab4e4825d..HEAD", "--format=%H%n%B%n---END---"],
+            text=True,
+        )
+    else:
+        post_root_msgs = msgs
     if re.search(r"[Cc]o-[Aa]uthored-[Bb]y:|[Ss]igned-[Oo]ff-[Bb]y:", msgs):
         failures.append("commit history contains attribution or sign-off trailer")
     for lbl, rx in public_terms:
-        if rx.search(msgs):
+        target_msgs = post_root_msgs if lbl == "generic:retired-product-name" else msgs
+        if target_msgs.strip() and rx.search(target_msgs):
             failures.append(f"commit message hit [{lbl}]")
     for idx, rx in enumerate(private_patterns, start=1):
         if rx.search(msgs):

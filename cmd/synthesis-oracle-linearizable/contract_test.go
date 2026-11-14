@@ -104,7 +104,7 @@ func TestGoldenWitnessAgreesWithTheCommittedOne(t *testing.T) {
 
 func oracleInputFor(t *testing.T, historyPath string) []byte {
 	t.Helper()
-	in := schema.NewOracleInput(historyPath, "final_state.json", "telemetry.json", "world.thesis",
+	in := schema.NewOracleInput(historyPath, "final_state.json", "telemetry.json", "world.synthesis",
 		schema.PhaseTimings{
 			{Phase: schema.PhaseDrive, StartMS: 0, EndMS: 42000},
 			{Phase: schema.PhaseHeal, StartMS: 42000, EndMS: 45000},

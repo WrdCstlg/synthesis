@@ -1,4 +1,4 @@
-// Package history writes the normative PRO-THESIS history log (JSONL) and
+// Package history writes the normative Synthesis history log (JSONL) and
 // classifies operation outcomes as ok / fail / info.
 //
 // The classifier in classify.go is the single most soundness-critical function

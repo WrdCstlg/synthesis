@@ -1,4 +1,4 @@
-// Command synthesis is the minimal CLI for the PRO-THESIS public demonstration.
+// Command synthesis is the minimal CLI for the Synthesis public demonstration.
 //
 // It exposes three subcommands only:
 //   - synthesis run

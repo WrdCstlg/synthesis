@@ -22,8 +22,9 @@ $RepoRoot = (Resolve-Path -LiteralPath $RepoRoot).Path
 $Failures = New-Object System.Collections.Generic.List[string]
 
 $PublicTerms = @(
-    @{ label = 'generic:host-user-dir'; pattern = '[A-Za-z]:[\\/]Users[\\/]|(^|[\s"''`])/Users/[A-Za-z0-9._-]+' },
-    @{ label = 'generic:register-id';   pattern = '\b(D|OQ|BL|D-WS|D-PUB)-\d{2,4}\b' }
+    @{ label = 'generic:host-user-dir';        pattern = '[A-Za-z]:[\\/]Users[\\/]|(^|[\s"''`])/Users/[A-Za-z0-9._-]+' },
+    @{ label = 'generic:register-id';          pattern = '\b(D|OQ|BL|D-WS|D-PUB)-\d{2,4}\b' },
+    @{ label = 'generic:retired-product-name'; pattern = '(?<!syn)(?<!hypo)the[s]is' }
 )
 
 $PrivatePatterns = New-Object System.Collections.Generic.List[string]
@@ -177,12 +178,24 @@ try {
             }
         }
         $fullMessages = (& git log --format='%H%n%B%n---END---') -join "`n"
+        $postRootMessages = ''
+        $prevEAP2 = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        & git cat-file -e d03c24733659bb6bd0e4c8fa4ad507dab4e4825d *> $null
+        $hasLegacyRoot = ($LASTEXITCODE -eq 0)
+        $ErrorActionPreference = $prevEAP2
+        if ($hasLegacyRoot) {
+            $postRootMessages = (& git log d03c24733659bb6bd0e4c8fa4ad507dab4e4825d..HEAD --format='%H%n%B%n---END---') -join "`n"
+        } else {
+            $postRootMessages = $fullMessages
+        }
         $trailerPat = '[Cc]o-[Aa]uthored-[Bb]y:|[Ss]igned-[Oo]ff-[Bb]y:'
         if ([regex]::IsMatch($fullMessages, $trailerPat)) {
             $Failures.Add("commit history contains attribution or sign-off trailer")
         }
         foreach ($entry in $PublicTerms) {
-            if ([regex]::IsMatch($fullMessages, $entry.pattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)) {
+            $msgTarget = if ($entry.label -eq 'generic:retired-product-name') { $postRootMessages } else { $fullMessages }
+            if (-not [string]::IsNullOrWhiteSpace($msgTarget) -and [regex]::IsMatch($msgTarget, $entry.pattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)) {
                 $Failures.Add("commit message hit [$($entry.label)]")
             }
         }

@@ -731,14 +731,14 @@ func startLoadDriver(
 	adminPermille := int(math.Round(drvProf.Mix["admin"] * 1000.0))
 
 	cmd.Env = append(os.Environ(),
-		"PROTHESIS_TARGETS="+targetsCSV,
-		"PROTHESIS_STDIN_CONTROL=1",
-		fmt.Sprintf("PROTHESIS_CLIENTS=%d", drvProf.Clients),
-		fmt.Sprintf("PROTHESIS_OPS=%d", drvProf.Ops),
-		fmt.Sprintf("PROTHESIS_MIX_READ=%d", readPermille),
-		fmt.Sprintf("PROTHESIS_MIX_WRITE=%d", writePermille),
-		fmt.Sprintf("PROTHESIS_MIX_TXN=%d", txnPermille),
-		fmt.Sprintf("PROTHESIS_MIX_ADMIN=%d", adminPermille),
+		"SYNTHESIS_TARGETS="+targetsCSV,
+		"SYNTHESIS_STDIN_CONTROL=1",
+		fmt.Sprintf("SYNTHESIS_CLIENTS=%d", drvProf.Clients),
+		fmt.Sprintf("SYNTHESIS_OPS=%d", drvProf.Ops),
+		fmt.Sprintf("SYNTHESIS_MIX_READ=%d", readPermille),
+		fmt.Sprintf("SYNTHESIS_MIX_WRITE=%d", writePermille),
+		fmt.Sprintf("SYNTHESIS_MIX_TXN=%d", txnPermille),
+		fmt.Sprintf("SYNTHESIS_MIX_ADMIN=%d", adminPermille),
 	)
 
 	stdin, err := cmd.StdinPipe()

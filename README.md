@@ -1,6 +1,6 @@
-# `synthesis` — Public Demonstration of PRO-THESIS
+# `synthesis` — Public Demonstration of Synthesis
 
-> **Notice:** This is a demonstration build of PRO-THESIS. The production engine is proprietary and is not included.
+> **Notice:** This is a demonstration build of Synthesis. The production engine is proprietary and is not included.
 
 `synthesis` runs a deterministic, tamper-locked linearizability gate against a three-node Raft key-value cluster in Docker Compose: it catches an unsafe read-lease stale read with a machine-verified witness (`FAIL`, exit `1`), certifies the quorum-bounded fix only when the full locked world budget completes (`PASS`, exit `0`), and refuses weakened workloads, budgets, or oracle sets before starting a single container (`ORACLE_DRIFT`, exit `4`).
 
@@ -71,14 +71,14 @@ Every execution produces an explicit verdict and deterministic process exit code
 ### Included in this demonstration repository
 
 - **Minimal `synthesis` CLI (`run`, `verify-lock`, `explain`):** Executes a fixed, scripted fault schedule against the three-node Docker Compose Raft fixture (`testdata/kvfixture`).
-- **Wing & Gong per-key linearizability oracle (`cmd/synthesis-oracle-linearizable`):** Exhaustively searches single-key read/write histories (splitting indeterminate writes across applied and unapplied branches) and produces machine-readable counterexamples (`prothesis.oracle_output/v1`).
+- **Wing & Gong per-key linearizability oracle (`cmd/synthesis-oracle-linearizable`):** Exhaustively searches single-key read/write histories (splitting indeterminate writes across applied and unapplied branches) and produces machine-readable counterexamples (`synthesis.oracle_output/v1`).
 - **Seeded three-node Raft fixture (`testdata/kvfixture`):** Includes both the defective 5,000 ms read-lease variant (`buggy`) and the bounded 300 ms quorum-fallback variant (`kvfixed`), plus deterministic client load generator (`cmd/loadgen`).
 - **Tamper-evident test lock (`internal/lock`):** Canonical SHA-256 manifest (`.synthesis/lock`) covering oracle definitions, topology (`docker-compose.yaml`), fault budgets, and referenced workload profiles, with cross-platform executable fingerprinting.
-- **Canonical JSON verdict artifacts and SVG witness rendering (`pkg/schema`, `internal/recorder`, `internal/demo`):** RFC 8785 / JCS canonical JSON encoding (`prothesis.verdict/v1`) and standalone causal-timeline SVG generation.
+- **Canonical JSON verdict artifacts and SVG witness rendering (`pkg/schema`, `internal/recorder`, `internal/demo`):** RFC 8785 / JCS canonical JSON encoding (`synthesis.verdict/v1`) and standalone causal-timeline SVG generation.
 
-### Full system only (proprietary PRO-THESIS engine — not included)
+### Full system only (proprietary Synthesis engine — not included)
 
-The production PRO-THESIS platform adds capabilities that belong strictly to the full system only and are not included in this repository:
+The production Synthesis platform adds capabilities that belong strictly to the full system only and are not included in this repository:
 
 - **Guided search over fault schedules** (*full system only*).
 - **Counterexample shrinking** (*full system only*).
@@ -101,5 +101,5 @@ Even where `synthesis` returns `PASS` (`exit 0`), treat the scope of what a gree
 ## Licence and contact
 
 - **Open-source demonstration code:** Licensed under the **GNU Affero General Public License v3.0 only (`AGPL-3.0-only`)** — see [`LICENSE`](LICENSE), [`NOTICE`](NOTICE), and [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md).
-- **Proprietary engine notice:** PRO-THESIS's production search, shrinking, fault-library, and target-adapter engine is proprietary and is not distributed in this repository.
-- **Contact:** Open an issue in this GitHub repository (`piercepartners/synthesis` or `WrdCstlg/synthesis`) for questions regarding the demonstration or PRO-THESIS evaluation inquiries.
+- **Proprietary engine notice:** Synthesis's production search, shrinking, fault-library, and target-adapter engine is proprietary and is not distributed in this repository.
+- **Contact:** Open an issue in this GitHub repository (`piercepartners/synthesis` or `WrdCstlg/synthesis`) for questions regarding the demonstration or Synthesis evaluation inquiries.

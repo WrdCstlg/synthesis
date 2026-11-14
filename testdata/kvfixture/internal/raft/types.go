@@ -1,5 +1,5 @@
 // Package raft implements the subset of the Raft consensus algorithm that the
-// PRO-THESIS KV fixture needs: leader election, log replication and commit
+// Synthesis KV fixture needs: leader election, log replication and commit
 // advance (Ongaro & Ousterhout, Figure 2), minus snapshots and minus membership
 // change.
 //

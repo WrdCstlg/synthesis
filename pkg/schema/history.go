@@ -46,7 +46,7 @@ type HistoryEntry struct {
 	// Run-relative nanoseconds were rejected: the driver is an external,
 	// unmodified process that cannot know the harness's virtual-clock origin,
 	// so it can only emit wall time. The harness records the DRIVE-start wall
-	// clock once, which makes the conversion to prothesis.oracle_input/v1's
+	// clock once, which makes the conversion to synthesis.oracle_input/v1's
 	// start_ms/end_ms exact. design record.
 	TNS int64 `json:"t_ns"`
 
@@ -292,7 +292,7 @@ func (hr *HistoryReader) readLine() ([]byte, error) {
 	}
 	// Trim the terminator, and a CR before it: a history written inside a
 	// container and read across a Windows bind mount may arrive CRLF-framed.
-	// This is input tolerance on a log, not a relaxed assertion: the .thesis
+	// This is input tolerance on a log, not a relaxed assertion: the .synthesis
 	// world file, whose bytes are hashed, rejects CR outright.
 	b = bytes.TrimSuffix(b, []byte{'\n'})
 	b = bytes.TrimSuffix(b, []byte{'\r'})

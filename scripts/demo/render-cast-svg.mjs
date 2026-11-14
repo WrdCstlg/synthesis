@@ -206,8 +206,8 @@ const lineSvg = drawn
   })
   .join('\n');
 
-const recorded = header.synthesis?.recorded_at ?? header.prothesis?.recorded_at ?? new Date(header.timestamp * 1000).toISOString();
-const host = header.synthesis?.platform ?? header.prothesis?.host ?? 'local host';
+const recorded = header.synthesis?.recorded_at ?? new Date(header.timestamp * 1000).toISOString();
+const host = header.synthesis?.platform ?? 'local host';
 const desc = `Terminal recording made ${recorded} on ${host}. Every line is shown as recorded; ` +
   `on playback, pauses longer than ${IDLE} s are shortened, ` +
   (paged ? `output that arrived at once but is taller than the screen is shown a screen at a time (${PAGE} s per screen), ` : '') +

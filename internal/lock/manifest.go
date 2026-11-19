@@ -21,9 +21,9 @@ import (
 // manifest covers cannot be mistaken for a change to what the user wrote: the
 // version moves, the digest moves, and `verify` says which.
 //
-// ADDITIVE. The directive names `.synthesis/lock` and the verdict's
+// ADDITIVE. The specification names `.synthesis/lock` and the verdict's
 // `oracle_lock.manifest_sha` but fixes no internal schema for either, so this
-// identifier is chosen to match the `synthesis.*` family. Logged as design record.
+// identifier is chosen to match the `synthesis.*` family.
 //
 // v2 adds Files, the compose file's content, and five covered keys.
 const ManifestSchema = "synthesis.lock_manifest/v2"
@@ -32,8 +32,7 @@ const ManifestSchema = "synthesis.lock_manifest/v2"
 //
 // Every field is derived from bytes the USER wrote: the contents of files
 // under oracles.dir, and the covered subset of synthesis.yaml with defaults NOT
-// applied. Nothing compiled in reaches it. See the package doc, D-F and
-// design record.2.
+// applied. Nothing compiled in reaches it. See the package doc.
 //
 // It is cjson-encodable by construction: no maps, no interfaces, no floats.
 // Floats in particular are excluded on purpose: `search.exploration_constant`
@@ -122,8 +121,8 @@ func (m Manifest) Digest() (string, error) {
 // empty file list rather than an error).
 //
 // It deliberately does NOT take a *schema.Config. Accepting one would put the
-// compiled-in defaults within reach, and the whole point of D-F is that they
-// are not.
+// compiled-in defaults within reach, and the whole point of raw projection is
+// that they are not.
 func Build(projectDir string, configBytes []byte, oraclesDir string) (Manifest, error) {
 	entries, err := ProjectConfig(configBytes)
 	if err != nil {

@@ -69,8 +69,8 @@ var builtin = map[string]Profile{
 	//  1. SINGLE-KEY ONLY. No txn and no admin weight, because the fixture's
 	//     txn reads one key and writes a DIFFERENT one, which breaks the
 	//     precondition of Herlihy & Wing's locality theorem. A checker handed
-	//     a multi-key operation must refuse (PHASE3_BUILD_BRIEF D-A), so
-	//     `gate` and `soak` are unusable for consistency checking BY DESIGN.
+	//     a multi-key operation must refuse, so `gate` and `soak` are unusable
+	//     for per-key consistency checking BY DESIGN.
 	//
 	//  2. LONG ENOUGH TO SPAN THE FAULT WINDOW. `smoke` is single-key but
 	//     retires 500 ops in ~700 ms and is finished long before a fault at
@@ -81,7 +81,7 @@ var builtin = map[string]Profile{
 	//     DRIVE before the anomaly can be observed. Read/write operations are
 	//     substantially cheaper than `gate`'s transactions, so matching
 	//     `gate`'s 20,000 would finish BEFORE the window rather than across
-	//     it: see design record.
+	//     it.
 	//
 	//  3. FEW KEYS. Conflict density, and therefore the checker's power to
 	//     witness a stale read, is a function of operations per key. Eight

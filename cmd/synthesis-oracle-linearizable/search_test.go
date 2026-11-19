@@ -35,7 +35,7 @@ func searchOps(t *testing.T, ops []*operation) (outcome, stats) {
 	return s.run(), s.st
 }
 
-// D-B, directly: an indeterminate write offers BOTH successor states.
+// An indeterminate write offers BOTH successor states.
 func TestAlternativesForAnIndeterminateWriteBranch(t *testing.T) {
 	w := mkOp(1, opWrite, "k", "2", 0, 1)
 	w.maybe = true

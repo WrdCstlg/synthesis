@@ -6,7 +6,7 @@ import (
 	"synthesis.dev/synthesis/pkg/schema"
 )
 
-// design record. The history file carries two kinds of record (driver-emitted
+// The history file carries two kinds of record (driver-emitted
 // operations and harness-emitted markers) and the ONLY thing separating them
 // is whether `event` is non-empty. A reader that classifies before it validates
 // therefore deletes any operation record that carries a stray event, silently

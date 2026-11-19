@@ -60,11 +60,11 @@ func main() {
 	os.Exit(code)
 }
 
-// Build provenance, stamped by scripts/build.ps1 via -ldflags -X. The fixture
+// Build provenance, stamped via -ldflags -X at compile time. The fixture
 // is a separate module and cannot import the harness's internal/buildinfo, so
 // it carries its own three vars with the same contract: empty means unstamped,
-// never an error. buildSourceDate is the commit's date, not a build clock, for
-// the reason design record. gives.
+// never an error. buildSourceDate is the commit's date, not a build clock, so
+// repeated builds of the same commit remain byte-identical.
 var (
 	buildCommit     string
 	buildDirty      string

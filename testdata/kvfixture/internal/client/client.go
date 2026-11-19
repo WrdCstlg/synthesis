@@ -1,5 +1,5 @@
-// Package client is the fixture's HTTP client. It exists so that loadgen,
-// provebug and the node binary's own health/steady probes all observe an
+// Package client is the fixture's HTTP client. It exists so that loadgen
+// and the node binary's own health/steady probes all observe an
 // operation the same way, and so that the evidence the ok/fail/info classifier
 // needs (was any byte of the request written? did headers arrive? did the body
 // carry applied:false?) is gathered rather than guessed.

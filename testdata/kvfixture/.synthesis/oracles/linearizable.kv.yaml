@@ -2,23 +2,24 @@
 #
 # This file is covered by .synthesis/lock. Editing ANY byte of it moves the
 # manifest digest and makes `synthesis run` exit 4 (ORACLE_DRIFT) before it boots a
-# topology. Re-locking is a deliberate, human-authored act:
+# topology. Re-locking is a deliberate, human-reviewed commit to .synthesis/lock
+# verified with:
 #
-#     synthesis verify-lock --reason "..."
+#     synthesis verify-lock --project ./testdata/kvfixture
 #
 # HONEST LIMITATION, stated rather than implied away: the DIGEST covers THIS
 # DEFINITION, not the executable `cmd` names. Swapping ./bin/linearizable-kv
 # for a program that always prints `ok` still does not move the digest, and
-# deliberately never will — hashing a binary into it would make an ordinary
+# deliberately never will: hashing a binary into it would make an ordinary
 # rebuild exit 4 and turn re-locking into a reflex.
 #
-# What changed in design record.: the lock's `executables` block now records this
-# program's SHA-256 OUTSIDE the digest, and `synthesis verify-lock` and every
-# run report a moved or missing one as a WARNING that also lands in the
-# verdict's oracle_lock.executables_moved. design record. measured the swap coming back
-# silently green; it is no longer silent. It is still POSSIBLE — nothing short
-# of signing makes it impossible — and only the program is fingerprinted, not
-# its interpreter or anything it loads at run time.
+# The lock's `executables` block records this program's SHA-256 OUTSIDE the
+# digest, and `synthesis verify-lock` and every run report a moved or missing
+# binary as a WARNING (or ORACLE_DRIFT on the locked platform) that also lands
+# in the verdict's oracle_lock.executables_moved. A binary swap is no longer
+# silent. It is still POSSIBLE (nothing short of signing makes it impossible),
+# and only the program is fingerprinted, not its interpreter or anything it
+# loads at run time.
 
 version: synthesis.oracle_def/v1
 
@@ -38,7 +39,7 @@ class: consistency
 # This is NOT a claim about where the evidence lies. A violation this oracle
 # reports routinely sits in DRIVE -- that is exactly what a stale read under a
 # partition looks like -- and `violations[].phase` is resolved from the
-# evidence, never from this list. design record.
+# evidence, never from this list.
 valid_phases: [ASSERT]
 
 # Resolved against the directory synthesis.yaml lives in; the host's .exe

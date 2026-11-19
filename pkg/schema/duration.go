@@ -25,7 +25,7 @@ import (
 // when asked, so the "probe with a string first" trick used for int-or-string
 // unions reports success for `budget: 90` with the value "90", and the
 // diagnostic below would never fire. The resolved node tag is the only reliable
-// discriminator. design record. and PHASE0_BUILD_BRIEF.md D-A.
+// discriminator.
 type Duration time.Duration
 
 // Std returns the standard library value.

@@ -19,9 +19,9 @@ const FileName = "lock"
 
 // FileSchema identifies the lock document.
 //
-// ADDITIVE, like ManifestSchema: the directive names the PATH `.synthesis/lock`
+// ADDITIVE, like ManifestSchema: the specification names the PATH `.synthesis/lock`
 // and the verdict field `oracle_lock.manifest_sha`, and fixes no document
-// schema for the file itself. Logged as design record.
+// schema for the file itself.
 const FileSchema = "synthesis.lock/v1"
 
 // ErrNoLock is returned when the project has no lock file.
@@ -50,12 +50,11 @@ func Path(projectDir string) string {
 //   - Reason and LockedAt change on every bump by construction; digesting them
 //     would make the digest a function of when it was written.
 //   - ToolVersion must not be hashed, or every upgrade of `synthesis` becomes an
-//     exit-4 incident on every downstream project (see cmd/synthesis/version.go
-//     and design record.2).
+//     exit-4 incident on every downstream project.
 //   - BuiltinOptionsFingerprint covers COMPILED-IN thresholds reachable from no
 //     config key. It is recorded so a reviewer can see it moved, and excluded
 //     so that a threshold adjustment in a release is a warning rather than
-//     drift. design record.
+//     drift.
 type File struct {
 	Schema string `json:"schema"`
 	// ManifestSHA is the digest of Manifest, "sha256:"-prefixed. It is the
@@ -67,20 +66,20 @@ type File struct {
 	LockedAt string `json:"locked_at"`
 	// ToolVersion is the synthesis build that wrote the file. Informational.
 	ToolVersion string `json:"tool_version"`
-	// BuiltinOptionsFingerprint is internal/oracle.Options.Fingerprint at write
+	// BuiltinOptionsFingerprint is the built-in oracle threshold fingerprint at write
 	// time. Informational; outside the digest.
 	BuiltinOptionsFingerprint string `json:"builtin_options_fingerprint,omitempty"`
 	// Executables records what each external oracle's cmd resolved to, and what
 	// that file hashed to, at write time. OUTSIDE the digest, for the reason
-	// given on ExecutableFingerprint. design record.
+	// given on ExecutableFingerprint.
 	//
 	// Omitted when empty so that a project with no external oracles, and a lock
 	// written before this block existed, both stay byte-identical.
 	Executables []ExecutableFingerprint `json:"executables,omitempty"`
 	// Platform is the GOOS/GOARCH the Executables fingerprints were taken on.
 	// On that platform a program that no longer matches is drift (exit 4); on
-	// any other it is a warning, because a build for another OS can never match
-	//. Empty in a lock written before it was recorded, which only warns.
+	// any other it is a warning, because a build for another OS can never match.
+	// Empty in a lock written before it was recorded, which only warns.
 	Platform string `json:"platform,omitempty"`
 	// Covers names the synthesis.yaml paths the manifest digests, so a reader
 	// of the file can see the scope without reading this package.
@@ -104,11 +103,11 @@ var Limitations = []string{
 		"container image or PATH entry resolved at run time is NOT hashed into manifest_sha. " +
 		"The `executables` block records each resolved program's SHA-256 OUTSIDE the digest, " +
 		"with the `platform` it was taken on. On that platform a changed, missing or newly " +
-		"resolvable program is ORACLE_DRIFT (exit 4, design record.); on any other platform it is a " +
-		"WARNING that also lands in the verdict, because a build for another OS can never match " +
-		". A program is reproducible from unchanged source only if it is built without a " +
-		"commit stamp. Only the program is fingerprinted — not its arguments, its interpreter, " +
-		"or anything it loads — and nothing short of signing makes a swap impossible.",
+		"resolvable program is ORACLE_DRIFT (exit 4); on any other platform it is a " +
+		"WARNING that also lands in the verdict, because a build for another OS can never match. " +
+		"A program is reproducible from unchanged source only if it is built without a " +
+		"commit stamp. Only the program is fingerprinted, not its arguments, its interpreter, " +
+		"or anything it loads, and nothing short of signing makes a swap impossible.",
 	"File modes are not covered. The executable bit does not survive a Windows checkout, so " +
 		"hashing it would fire a spurious ORACLE_DRIFT on a cross-platform clone.",
 	"Built-in oracle thresholds are compiled in and reachable from no config key. " +
@@ -116,8 +115,8 @@ var Limitations = []string{
 		"including it would turn any release that adjusts a default into exit 4 on every " +
 		"downstream project at once. `synthesis verify-lock` reports a moved fingerprint as a " +
 		"warning, never as drift.",
-	"The driver is covered by its COMMAND and by the driver profiles a run profile names " +
-		". A driver profile no run profile names is not covered, because it is not the " +
+	"The driver is covered by its COMMAND and by the driver profiles a run profile names. " +
+		"A driver profile no run profile names is not covered, because it is not the " +
 		"gate's workload and covering it would fire exit 4 on routine edits. The " +
 		"driver's PROGRAM is fingerprinted in the `executables` block as `driver.cmd`, outside " +
 		"the digest, so a rebuilt or swapped driver is a WARNING and not drift. Neither the " +

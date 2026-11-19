@@ -19,9 +19,9 @@ import (
 // Three things happen here, and the order matters:
 //
 //  1. records are paired into operations by op_id
-//  2. the PER-KEY DECOMPOSITION PRECONDITION is checked (brief D-A). Nothing is
+//  2. the PER-KEY DECOMPOSITION PRECONDITION is checked. Nothing is
 //     partitioned before it passes.
-//  3. ok / fail / info are applied (brief D-B)
+//  3. ok / fail / info classification rules are applied
 //
 // Every refusal in this file is a *refusal*, reported as INCONCLUSIVE. None of
 // them is ever a violation and none of them is ever silently absorbed.
@@ -180,7 +180,7 @@ func readHistory(r io.Reader, path string, deadline time.Time) (*loaded, error) 
 		// exactly this; the read path simply did not call it. Refusing here is
 		// the only outcome that is honest in both directions: a record we cannot
 		// classify is not evidence of a violation and is not evidence of its
-		// absence. design record.
+		// absence.
 		if verr := e.Validate(); verr != nil {
 			return nil, refuse("line %d of %s is not a valid history record: %v. A record carrying "+
 				"an \"event\" field is a MARKER and is skipped, so an operation record that also "+
@@ -271,7 +271,7 @@ func hasTimestamp(line []byte) bool {
 }
 
 // ---------------------------------------------------------------------------
-// D-A. The per-key decomposition precondition
+// The per-key decomposition precondition
 // ---------------------------------------------------------------------------
 
 // opShape is what the precondition scan learns about one operation.
@@ -481,7 +481,7 @@ func joinQuoted(ss []string) string {
 }
 
 // ---------------------------------------------------------------------------
-// D-B. ok / fail / info
+// ok / fail / info
 // ---------------------------------------------------------------------------
 
 // buildOperations applies the soundness rules for ok, fail and info.

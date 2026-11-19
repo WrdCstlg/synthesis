@@ -134,7 +134,7 @@ func TestAViolationOnOneKeyDecidesTheHistory(t *testing.T) {
 }
 
 // ---------------------------------------------------------------------------
-// D-B. ok / fail / info
+// ok / fail / info
 // ---------------------------------------------------------------------------
 
 // THE FALSE-POSITIVE TEST. The history is linearizable if and only if the
@@ -223,7 +223,7 @@ func TestInfoReadIsDropped(t *testing.T) {
 }
 
 // ---------------------------------------------------------------------------
-// D-A. The per-key decomposition precondition
+// The per-key decomposition precondition
 // ---------------------------------------------------------------------------
 
 // A multi-key transaction breaks the locality theorem's hypothesis. The checker
@@ -374,7 +374,7 @@ func TestRecordWithNoOpIDIsInconclusive(t *testing.T) {
 	wantMentions(t, got, "carries no op_id")
 }
 
-// design record., H6. schema.HistoryEntry decodes t_ns into a plain int64, so a record
+// schema.HistoryEntry decodes t_ns into a plain int64, so a record
 // with no t_ns used to load as 0, the epoch. On an ok completion that is a FALSE
 // VIOLATION: the return is clamped up to the invoke, the interval collapses to a
 // point, and a read that really overlapped the write is ordered after it. W2's
@@ -442,7 +442,7 @@ func TestMissingHistoryFileIsInconclusive(t *testing.T) {
 }
 
 // ---------------------------------------------------------------------------
-// D-C. Budget exhaustion
+// Budget exhaustion
 // ---------------------------------------------------------------------------
 
 func TestStateCeilingExhaustionIsInconclusiveNotOK(t *testing.T) {

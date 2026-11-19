@@ -30,7 +30,7 @@ import "time"
 // reasoning never mentions the election timeout, which is exactly the term it
 // needed to mention.
 //
-// Two consequences, both required by spec section 5:
+// Two consequences:
 //
 //  1. net.partition(minority) -- an isolated leader keeps serving local reads
 //     for the remaining lease, which outlives its own replacement's election by
@@ -41,9 +41,7 @@ import "time"
 //     granted still believes it holds the lease, and serves a read from a state
 //     machine missing every write committed in the new term. Note that the
 //     monotonic clock keeps advancing during the freeze, so the pause must be
-//     SHORTER than the lease for this to fire. That is the honest behaviour of
-//     the mechanism spec section 5 describes, and it is why the reference
-//     schedule's 6.9s pause cannot trigger this bug (logged as design record.).
+//     SHORTER than the lease for this to fire.
 //
 // THE FIX is one line: see lease_fixed.go (build tag `kvfixed`), which sets the
 // lease to 300ms, comfortably inside ElectionTimeoutMin.

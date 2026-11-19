@@ -1,8 +1,14 @@
-# `synthesis` — Public Demonstration of Synthesis
+# `synthesis`: Public Capability Demonstration of Synthesis
 
 > **Notice:** This is a demonstration build of Synthesis. The production engine is proprietary and is not included.
 
-`synthesis` runs a deterministic, tamper-locked linearizability gate against a three-node Raft key-value cluster in Docker Compose: it catches an unsafe read-lease stale read with a machine-verified witness (`FAIL`, exit `1`), certifies the quorum-bounded fix only when the full locked world budget completes (`PASS`, exit `0`), and refuses weakened workloads, budgets, or oracle sets before starting a single container (`ORACLE_DRIFT`, exit `4`).
+Synthesis is a deterministic fault-injection and verification gate for distributed systems, designed for CI pipelines, engineering release gates, and autonomous coding workflows. Conventional reliability tests can return a false pass in two ways: the fault misses the active workload or the checker fails silently, or an operator or coding agent weakens the workload, fault budget, or oracle rules to turn a failing build green.
+
+This public demonstration runs a tamper-locked linearizability gate against a three-node Raft key-value cluster in Docker Compose:
+
+- **Proves real defects with a concrete counterexample:** Injects a leader network partition under concurrent client load, catches an unsafe read-lease stale read, and outputs a machine-verified causal witness (`FAIL`, exit `1`).
+- **Requires earned passes:** Certifies the quorum-bounded fix only when the full locked world budget completes under active load and every configured oracle succeeds (`PASS`, exit `0`).
+- **Prevents silent test weakening:** Cryptographically hashes the topology, workload parameters, fault schedule, and oracle definitions into `.synthesis/lock`, halting before any container starts if the test specification has been altered (`ORACLE_DRIFT`, exit `4`).
 
 ![Witness of a stale read caught inside a leader peer-network partition](docs/media/witness.svg)
 
@@ -59,7 +65,7 @@ Every execution produces an explicit verdict and deterministic process exit code
 |---|---|---|
 | `PASS` | `0` | `.synthesis/lock` matched, every planned world in the locked budget completed, client load overlapped every scheduled fault window, and every configured built-in and external oracle returned `ok`. |
 | `FAIL` | `1` | At least one built-in or external oracle witnessed a safety or liveness violation; `verdict.json` records the violation, witness operation IDs, and causal timeline, and `witness.svg` renders the counterexample. |
-| `INCONCLUSIVE` / `BUDGET_EXHAUSTED` | `2` / `3` | No violation was witnessed, **and** `PASS` was not earned — for example, `--worlds` or `--budget` narrowed the run below `.synthesis/lock`, a scheduled fault landed after client load had already ended, an external oracle crashed or emitted invalid output (`exit 2`), or the wall-clock budget expired mid-run (`exit 3`). |
+| `INCONCLUSIVE` / `BUDGET_EXHAUSTED` | `2` / `3` | No violation was witnessed, **and** `PASS` was not earned. For example, `--worlds` or `--budget` narrowed the run below `.synthesis/lock`, a scheduled fault landed after client load had already ended, an external oracle crashed or emitted invalid output (`exit 2`), or the wall-clock budget expired mid-run (`exit 3`). |
 | `ORACLE_DRIFT` | `4` | `.synthesis/lock` was absent (under `verify-lock`), internally inconsistent, or disagreed with `synthesis.yaml`, `docker-compose.yaml`, `.synthesis/oracles/*`, or same-platform oracle executables; `synthesis run` refuses before starting any container. |
 
 *(Malformed CLI flags or invalid `synthesis.yaml` syntax exit with code `5`, `CONFIG_ERROR`.)*
@@ -76,7 +82,7 @@ Every execution produces an explicit verdict and deterministic process exit code
 - **Tamper-evident test lock (`internal/lock`):** Canonical SHA-256 manifest (`.synthesis/lock`) covering oracle definitions, topology (`docker-compose.yaml`), fault budgets, and referenced workload profiles, with cross-platform executable fingerprinting.
 - **Canonical JSON verdict artifacts and SVG witness rendering (`pkg/schema`, `internal/recorder`, `internal/demo`):** RFC 8785 / JCS canonical JSON encoding (`synthesis.verdict/v1`) and standalone causal-timeline SVG generation.
 
-### Full system only (proprietary Synthesis engine — not included)
+### Full system only (proprietary Synthesis engine, not included)
 
 The production Synthesis platform adds capabilities that belong strictly to the full system only and are not included in this repository:
 
@@ -91,7 +97,7 @@ The production Synthesis platform adds capabilities that belong strictly to the 
 
 Even where `synthesis` returns `PASS` (`exit 0`), treat the scope of what a green verdict proves honestly:
 
-1. **Bounded empirical schedule, not an unbounded formal proof:** In this demo, `PASS` certifies only that the configured profile's scripted fault schedule (`net.partition(role:leader)@3000..7500`) and seeds (`2` worlds) produced linearizable histories without crashes, panics, or stuck operations — not that every reachable schedule or failure mode is bug-free.
+1. **Bounded empirical schedule, not an unbounded formal proof:** In this demo, `PASS` certifies only that the configured profile's scripted fault schedule (`net.partition(role:leader)@3000..7500`) and seeds (`2` worlds) produced linearizable histories without crashes, panics, or stuck operations, not that every reachable schedule or failure mode is bug-free.
 2. **Single-key register linearizability only:** `linearizable-kv` checks single-key read/write linearizability via Herlihy & Wing locality; multi-key transactions are rejected as `inconclusive` rather than silently mischecked.
 3. **Single fault primitive in the demo:** Only Docker Compose peer-network partitioning (`net.partition`) is exercised here; disk stalls, packet corruption, process pauses, clock skew, and cascading restarts are not tested in this build.
 4. **Unsigned executable fingerprints across OS boundaries:** `.synthesis/lock` digests YAML definitions and `docker-compose.yaml` across all platforms and records SHA-256 fingerprints of oracle/driver binaries; on a different OS/architecture than the lock's recorded platform, a rebuilt binary emits a warning rather than `exit 4`, and nothing short of cryptographic code signing prevents host-level binary replacement.
@@ -100,6 +106,6 @@ Even where `synthesis` returns `PASS` (`exit 0`), treat the scope of what a gree
 
 ## Licence and contact
 
-- **Open-source demonstration code:** Licensed under the **GNU Affero General Public License v3.0 only (`AGPL-3.0-only`)** — see [`LICENSE`](LICENSE), [`NOTICE`](NOTICE), and [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md).
+- **Open-source demonstration code:** Licensed under the **GNU Affero General Public License v3.0 only (`AGPL-3.0-only`)**. See [`LICENSE`](LICENSE), [`NOTICE`](NOTICE), and [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md).
 - **Proprietary engine notice:** Synthesis's production search, shrinking, fault-library, and target-adapter engine is proprietary and is not distributed in this repository.
 - **Contact:** Open an issue in this GitHub repository (`piercepartners/synthesis` or `WrdCstlg/synthesis`) for questions regarding the demonstration or Synthesis evaluation inquiries.

@@ -22,8 +22,8 @@ type GateOptions struct {
 	// already has the bytes. It must be the RAW user document, never a
 	// re-serialisation of a decoded Config, which would carry defaults.
 	ConfigBytes []byte
-	// BuiltinOptionsFingerprint is internal/oracle.Options.Fingerprint().
-	// Compared for a WARNING only; see Report.OptionsMoved and design record.
+	// BuiltinOptionsFingerprint records compiled-in built-in oracle thresholds.
+	// Compared for a WARNING only; see Report.OptionsMoved.
 	BuiltinOptionsFingerprint string
 	// Platform is the GOOS/GOARCH this check runs on, compared with the lock's
 	// recorded platform. Empty means CurrentPlatform(); tests set it to check
@@ -57,7 +57,7 @@ type Report struct {
 	// differ from the ones recorded at lock time. It is a WARNING and NEVER
 	// drift: those thresholds are reachable from no config key, so treating a
 	// release that adjusts one as ORACLE_DRIFT would halt every downstream
-	// project on an upgrade; the failure D-F exists to prevent. design record.
+	// project on an upgrade.
 	OptionsMoved          bool
 	OptionsFingerprintWas string
 	OptionsFingerprintNow string
@@ -69,7 +69,7 @@ type Report struct {
 	// program no longer matches the lock. The fingerprints are outside the
 	// digest, so this is never a field-level config change. It reaches the
 	// VERDICT, because this is the program that DECIDED the verdict: a green
-	// result whose checker changed has to carry that fact. design record.
+	// result whose checker changed has to carry that fact.
 	ExecutablesMoved []ExecutableChange
 	// ExecutablesFatal is set when ExecutablesMoved is non-empty AND this check
 	// runs on the platform the lock's fingerprints were taken on. The status is
@@ -89,10 +89,10 @@ type Report struct {
 	InconsistencyExplanation string
 }
 
-// Gate is THE enforcement point (D-I).
+// Gate is THE enforcement point.
 //
 // `synthesis run` calls it before booting anything (there is no point starting a
-// cluster for a run whose verdict is already void) and Phase 6's `synthesis gate`
+// cluster for a run whose verdict is already void) and `synthesis verify-lock`
 // wraps this same function rather than reimplementing it.
 //
 // It returns an error only for conditions under which drift cannot be
@@ -236,12 +236,12 @@ func (r *Report) EnforceExitCode() schema.ExitCode {
 
 // VerifyExitCode is the code `synthesis verify-lock` returns.
 //
-// An ABSENT lock fails here where it does not fail a run. `verify` is an
+// An ABSENT lock fails here where it does not fail a run. `verify-lock` is an
 // explicit request to check the gate against its baseline; answering "there is
 // no baseline" with exit 0 would be a vacuous pass in the one command whose
 // entire job is to notice that the baseline moved, and it is a pass an agent
 // could manufacture by deleting one file. Exit 4 is the right code because the
-// remedy is a human-authored `synthesis verify-lock --reason`, which is precisely
+// remedy is a human-reviewed `.synthesis/lock` commit, which is precisely
 // what an agent must not do for itself.
 func (r *Report) VerifyExitCode() schema.ExitCode {
 	switch r.Status {
@@ -322,7 +322,7 @@ func (r *Report) Diagnosis() string {
 	// Printed for EVERY status, including ok. A swapped checker's whole
 	// signature is that everything else looks normal, so a warning that only
 	// appeared alongside other bad news would appear exactly when it was not
-	// needed. design record.
+	// needed.
 	if len(r.ExecutablesMoved) > 0 {
 		if r.ExecutablesFatal {
 			b.WriteString(indent(FormatExecutableDrift(r.ExecutablesMoved, r.Platform), "  "))

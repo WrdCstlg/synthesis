@@ -34,8 +34,8 @@ type rec struct {
 	errS  string
 	// ev sets the `event` field, which is the marker/operation discriminator.
 	// Setting it on a record that also carries operation fields is malformed by
-	// construction (the shape design record. is about) and no writer would emit it,
-	// which is why it can only be built here.
+	// construction and no writer would emit it, which is why it can only be
+	// built here.
 	ev string
 }
 
@@ -88,9 +88,9 @@ func rOK(id int64, key string, t0, t1 int64, v string) []rec {
 	return op(id, 1, "read", key, t0, t1, "", v, schema.HistoryOK)
 }
 
-// tag sets `event` on every record in a group. This is how a real history
-// acquires the design record. shape: a driver that labels its own operations, or a
-// second writer whose marker fields land on an operation line.
+// tag sets `event` on every record in a group. This models how a history
+// acquires a hybrid operation/marker record: a driver that labels its own
+// operations, or a second writer whose marker fields land on an operation line.
 func tag(ev string, recs []rec) []rec {
 	out := make([]rec, len(recs))
 	copy(out, recs)

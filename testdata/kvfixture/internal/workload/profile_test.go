@@ -103,8 +103,7 @@ func TestValidateRejectsEmptyMix(t *testing.T) {
 // linear exists so a per-key linearizability checker has a history it can
 // SOUNDLY consume. Every assertion here guards a property that, if lost, turns
 // the consistency oracle into a permanent `inconclusive` -- which is a gate
-// that reports green because nothing was checked, the second-ranked failure
-// mode in PHASE3_BUILD_BRIEF section 0.
+// that reports green because nothing was checked.
 func TestLinearProfileIsSingleKeyOnly(t *testing.T) {
 	p, err := Resolve("linear", envMap(nil))
 	if err != nil {
@@ -113,7 +112,7 @@ func TestLinearProfileIsSingleKeyOnly(t *testing.T) {
 
 	// The fixture's txn reads one key and writes a DIFFERENT, independently
 	// drawn key, so ANY txn weight breaks the precondition of the locality
-	// theorem and the checker must refuse the whole history (brief D-A).
+	// theorem and the checker must refuse the whole history.
 	if p.Mix.Txn != 0 {
 		t.Fatalf("linear has txn weight %d; the fixture's txn is MULTI-KEY, so a per-key "+
 			"linearizability checker must refuse every history this profile produces", p.Mix.Txn)

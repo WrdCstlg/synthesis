@@ -7,7 +7,7 @@ import (
 )
 
 // ---------------------------------------------------------------------------
-// D-D. Wing & Gong with Lowe's optimisations
+// Wing & Gong with Lowe's optimisations
 //
 // Per key, over a last-write-wins register:
 //
@@ -230,7 +230,7 @@ func alternatives(state Value, op *operation) []Value {
 	if !op.maybe {
 		return []Value{op.value}
 	}
-	// D-B: an indeterminate write MUST branch. Treating it as definitely applied
+	// An indeterminate write MUST branch. Treating it as definitely applied
 	// over-constrains the model and is a false-positive generator; treating it as
 	// definitely not applied is equally wrong in the other direction.
 	if state.Equal(op.value) {

@@ -1,5 +1,5 @@
 // Command synthesis-oracle-linearizable is Synthesis's linearizability checker
-// for the KV register model, packaged as an EXTERNAL oracle (Phase 3 brief D-E).
+// for the KV register model, packaged as an EXTERNAL oracle.
 //
 // It reads synthesis.oracle_input/v1 on stdin, writes synthesis.oracle_output/v1
 // on stdout, and exits 0 (ok), 1 (violated) or 2 (inconclusive). It declares
@@ -9,9 +9,9 @@
 //
 // # What it decides, and what it refuses to decide
 //
-// The three ways this component can fail, ranked by the brief, are a false
-// positive, a silent vacuous pass, and a spurious lock failure. Everything below
-// is arranged against the first two.
+// The three ways this component can fail are a false positive, a silent vacuous
+// pass, and a spurious lock failure. Everything below is arranged against the
+// first two.
 //
 //	violated      only ever from a WITNESSED linearization failure: a search
 //	              that exhausted the space for one key and found nothing. Never

@@ -114,7 +114,7 @@ func check(path string, opt options, start time.Time) report {
 		}
 	}
 
-	// D-C. Never ok for a key the search did not finish.
+	// Never report ok for a key the search did not finish.
 	var unfinished []keyResult
 	for _, r := range results {
 		if r.Out == outcomeExhausted {
@@ -329,7 +329,7 @@ func earlier(a, b *operation) bool {
 }
 
 // ---------------------------------------------------------------------------
-// D-C. The budget
+// The budget
 // ---------------------------------------------------------------------------
 
 // budget is the shared wall-clock and explored-state allowance.

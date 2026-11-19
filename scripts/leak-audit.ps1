@@ -24,7 +24,8 @@ $Failures = New-Object System.Collections.Generic.List[string]
 $PublicTerms = @(
     @{ label = 'generic:host-user-dir';        pattern = '[A-Za-z]:[\\/]Users[\\/]|(^|[\s"''`])/Users/[A-Za-z0-9._-]+' },
     @{ label = 'generic:register-id';          pattern = '\b(D|OQ|BL|D-WS|D-PUB)-\d{2,4}\b' },
-    @{ label = 'generic:retired-product-name'; pattern = '(?<!syn)(?<!hypo)the[s]is' }
+    @{ label = 'generic:retired-product-name'; pattern = '(?<!syn)(?<!hypo)the[s]is' },
+    @{ label = 'generic:stripped-citation';    pattern = 'build[_]brief|design\s+record\.' }
 )
 
 $PrivatePatterns = New-Object System.Collections.Generic.List[string]

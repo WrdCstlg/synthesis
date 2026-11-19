@@ -22,6 +22,7 @@ public_terms = [
     ("generic:host-user-dir", re.compile(r"[A-Za-z]:[\\/]Users[\\/]|(^|[\s\"'`])/Users/[A-Za-z0-9._-]+", re.IGNORECASE)),
     ("generic:register-id", re.compile(r"\b(D|OQ|BL|D-WS|D-PUB)-\d{2,4}\b", re.IGNORECASE)),
     ("generic:retired-product-name", re.compile(r"(?<!syn)(?<!hypo)the[s]is", re.IGNORECASE)),
+    ("generic:stripped-citation", re.compile(r"build[_]brief|design\s+record\.", re.IGNORECASE)),
 ]
 
 private_patterns = []

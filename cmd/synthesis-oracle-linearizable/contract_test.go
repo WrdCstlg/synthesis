@@ -12,8 +12,8 @@ import (
 	"synthesis.dev/synthesis/pkg/schema"
 )
 
-// goldenHistory is the committed witness history from the fixture's provebug
-// run: a single key, a definite write of 7, a definite write of 9 that returns
+// goldenHistory is the committed witness history from the fixture:
+// a single key, a definite write of 7, a definite write of 9 that returns
 // before the read is invoked, and a read of 7 served by the displaced leader
 // under its stale lease.
 const goldenHistory = "../../testdata/kvfixture/golden/history.jsonl"

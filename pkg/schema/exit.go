@@ -24,7 +24,7 @@ const (
 	// expires having found no violation but having added new log templates is a
 	// PASS, not a soft warning. This code encodes the decision; it does not make
 	// it. The control plane decides, and it must not map every budget expiry
-	// here. Coverage itself is a Phase 4 signal.
+	// here.
 	ExitBudgetExhausted ExitCode = 3
 	// ExitOracleDrift: .synthesis/lock mismatch or a gate-weakening attempt.
 	// Fail closed; never auto-resolve.

@@ -11,9 +11,9 @@ import (
 // ---------------------------------------------------------------------------
 // Scale
 //
-// The brief's Phase 3 plan adds a single-key driver profile of ~20,000
-// operations over a few keys, spanning the fault window. A checker that cannot
-// finish that history inside its budget reports INCONCLUSIVE, which is honest
+// The `linear` driver profile issues a high-density single-key workload over
+// eight keys spanning the fault window. A checker that cannot finish that
+// history inside its budget reports INCONCLUSIVE, which is honest
 // but useless: the definition of done needs a `violated`. These tests measure
 // the search at that size so the claim "tractable at gate scale" is a
 // measurement rather than an assertion.

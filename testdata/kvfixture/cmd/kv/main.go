@@ -155,7 +155,7 @@ func runServe(args []string) error {
 	if err != nil {
 		return err
 	}
-	applyWait, err := envMS("KV_APPLY_WAIT_MS", 2000*time.Millisecond)
+	applyWait, err := envMS("KV_APPLY_WAIT_MS", 800*time.Millisecond)
 	if err != nil {
 		return err
 	}

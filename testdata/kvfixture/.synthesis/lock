@@ -1,6 +1,6 @@
 {
   "schema": "synthesis.lock/v1",
-  "manifest_sha": "sha256:e03093ed97fcb203d2f4d8ec142ca1671824d30f83322d887d98f5ce2a27112e",
+  "manifest_sha": "sha256:58ebac6cb818d968b851e5d96db6866e22e05a6ff01db2fd8cf956d26c6be0c2",
   "reason": "initial locked baseline for kvfixture public demonstration (AT-1..AT-3)",
   "locked_at": "2026-11-10T00:00:00Z",
   "tool_version": "0.1.0-demo",
@@ -22,10 +22,10 @@
     "driver.profiles.<name>, for every <name> a profiles.*.driver_profile names"
   ],
   "limitations": [
-    "The DIGEST does not cover the EXECUTABLE an oracle or the driver names. Files under oracles.dir are covered byte for byte; the binary, interpreter, shared library, container image or PATH entry resolved at run time is NOT hashed into manifest_sha. The `executables` block records each resolved program's SHA-256 OUTSIDE the digest, with the `platform` it was taken on. On that platform a changed, missing or newly resolvable program is ORACLE_DRIFT (exit 4, design record.); on any other platform it is a WARNING that also lands in the verdict, because a build for another OS can never match . A program is reproducible from unchanged source only if it is built without a commit stamp. Only the program is fingerprinted — not its arguments, its interpreter, or anything it loads — and nothing short of signing makes a swap impossible.",
+    "The DIGEST does not cover the EXECUTABLE an oracle or the driver names. Files under oracles.dir are covered byte for byte; the binary, interpreter, shared library, container image or PATH entry resolved at run time is NOT hashed into manifest_sha. The `executables` block records each resolved program's SHA-256 OUTSIDE the digest, with the `platform` it was taken on. On that platform a changed, missing or newly resolvable program is ORACLE_DRIFT (exit 4); on any other platform it is a WARNING that also lands in the verdict, because a build for another OS can never match. A program is reproducible from unchanged source only if it is built without a commit stamp. Only the program is fingerprinted, not its arguments, its interpreter, or anything it loads, and nothing short of signing makes a swap impossible.",
     "File modes are not covered. The executable bit does not survive a Windows checkout, so hashing it would fire a spurious ORACLE_DRIFT on a cross-platform clone.",
     "Built-in oracle thresholds are compiled in and reachable from no config key. builtin_options_fingerprint records them for review but is OUTSIDE the digest: including it would turn any release that adjusts a default into exit 4 on every downstream project at once. `synthesis verify-lock` reports a moved fingerprint as a warning, never as drift.",
-    "The driver is covered by its COMMAND and by the driver profiles a run profile names . A driver profile no run profile names is not covered, because it is not the gate's workload and covering it would fire exit 4 on routine edits. The driver's PROGRAM is fingerprinted in the `executables` block as `driver.cmd`, outside the digest, so a rebuilt or swapped driver is a WARNING and not drift. Neither the workload a driver compiles in for a profile name nor the environment it inherits is covered: a driver that reads its workload from its own table or from environment variables can still be changed without moving this digest.",
+    "The driver is covered by its COMMAND and by the driver profiles a run profile names. A driver profile no run profile names is not covered, because it is not the gate's workload and covering it would fire exit 4 on routine edits. The driver's PROGRAM is fingerprinted in the `executables` block as `driver.cmd`, outside the digest, so a rebuilt or swapped driver is a WARNING and not drift. Neither the workload a driver compiles in for a profile name nor the environment it inherits is covered: a driver that reads its workload from its own table or from environment variables can still be changed without moving this digest.",
     "The digest covers the USER-SUPPLIED synthesis.yaml with defaults NOT applied. A key you did not write contributes nothing, so upgrading synthesis cannot move this digest by changing a compiled-in default."
   ],
   "manifest": {
@@ -33,8 +33,8 @@
     "oracles": [
       {
         "path": "linearizable.kv.yaml",
-        "sha256": "sha256:08112c9330d8f512ebacbd510a295fdddb3bf4eb44e4a99f5b6e50215dedbd16",
-        "size": 2920
+        "sha256": "sha256:3c751af564cde9f5f6c5e44ea44892934f6651c2fee8bc6d3bc50c20ae70b923",
+        "size": 2909
       }
     ],
     "config": [

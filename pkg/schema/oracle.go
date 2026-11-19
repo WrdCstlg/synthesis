@@ -51,8 +51,8 @@ func (c OracleExitCode) Status() OracleStatus {
 type OracleInput struct {
 	Schema      string `json:"schema"`
 	HistoryPath string `json:"history_path"`
-	// FinalStatePath and TelemetryPath name artifacts whose own schemas are
-	// Phase 1 deliverables. Phase 0 carries the paths, not their contents.
+	// FinalStatePath and TelemetryPath name the per-world final state and
+	// telemetry artifacts produced alongside the history file.
 	FinalStatePath string `json:"final_state_path"`
 	TelemetryPath  string `json:"telemetry_path"`
 	WorldPath      string `json:"world_path"`

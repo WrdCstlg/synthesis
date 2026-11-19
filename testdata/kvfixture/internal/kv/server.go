@@ -157,8 +157,7 @@ func (s *Server) handleReadyz(w http.ResponseWriter, _ *http.Request) {
 	s.writeJSON(w, http.StatusOK, map[string]any{"ok": true, "node": s.opts.NodeID})
 }
 
-// Status is the observability tuple. Phase 2 resolves role:leader from it and
-// Phase 4 builds state-abstraction tuples from it.
+// Status is the node observability snapshot used by steady-state and role probes.
 type Status struct {
 	Node        string `json:"node"`
 	Variant     string `json:"variant"`

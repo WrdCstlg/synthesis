@@ -145,7 +145,7 @@ func TestHistoryUnionValidation(t *testing.T) {
 		"op record with no f":        {TNS: 1, Type: HistoryOK, Process: &pid},
 		"op record carrying a phase": {TNS: 1, Type: HistoryOK, F: "read", Phase: PhaseHeal},
 		"unknown type":               {TNS: 1, Type: HistoryType("done"), F: "read"},
-		// design record. op_id and value are what make a record evidence. A reader
+		// op_id and value are what make a record evidence. A reader
 		// discriminates on `event` alone and skips markers, so a record carrying
 		// both an event and an op_id is an operation that vanishes without being
 		// counted: which hides a real violation or manufactures a false one.

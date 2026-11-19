@@ -47,7 +47,7 @@ type HistoryEntry struct {
 	// unmodified process that cannot know the harness's virtual-clock origin,
 	// so it can only emit wall time. The harness records the DRIVE-start wall
 	// clock once, which makes the conversion to synthesis.oracle_input/v1's
-	// start_ms/end_ms exact. design record.
+	// start_ms/end_ms exact.
 	TNS int64 `json:"t_ns"`
 
 	// Process is the logical client id. A pointer because process 0 is real.
@@ -130,7 +130,7 @@ func (e *HistoryEntry) Validate() error {
 		// event and an op_id is not merely malformed: it is an operation that
 		// will be silently dropped by every marker-skipping reader, deleting a
 		// completion from the history a verdict rests on. Rejecting it here is
-		// what makes that deletion impossible rather than unlikely. design record.
+		// what makes that deletion impossible rather than unlikely.
 		if e.OpID != nil {
 			errs.Add("op_id", "a marker record carries no op_id, got %d "+
 				"(a record with both an event and an op_id is an operation that "+

@@ -675,3 +675,57 @@ func TestLogUpToDateRestriction(t *testing.T) {
 		}
 	}
 }
+
+// A lagging candidate whose RequestVote is rejected (UpToDate == false) must
+// not reset an existing follower's election deadline when advancing currentTerm.
+// Otherwise a partitioned or slightly behind follower that times out first can
+// repeatedly reset the up-to-date follower's election timer and starve leader
+// election across an entire partition window.
+func TestRejectedVoteDoesNotResetFollowerElectionDeadline(t *testing.T) {
+	s1 := raft.NewMemStorage()
+	_ = s1.SaveState(1, "")
+	_ = s1.AppendEntries([]raft.Entry{{Index: 1, Term: 1}, {Index: 2, Term: 1}})
+
+	s2 := raft.NewMemStorage()
+	_ = s2.SaveState(1, "")
+	_ = s2.AppendEntries([]raft.Entry{{Index: 1, Term: 1}})
+
+	o := clusterOpts{
+		seed:     77,
+		tick:     10 * time.Millisecond,
+		hb:       40 * time.Millisecond,
+		electMin: 160 * time.Millisecond,
+		electMax: 180 * time.Millisecond,
+		rpc:      50 * time.Millisecond,
+		latency:  time.Millisecond,
+		stores:   map[string]raft.Storage{"n1": s1, "n2": s2},
+	}
+	// Isolate n3 so {n1, n2} form the 2-of-3 survivor majority where n1 has the
+	// longer log (index 2) and n2 lags by one entry (index 1).
+	c := newCluster(t, []string{"n1", "n2", "n3"}, o)
+	c.net.Isolate("n3")
+
+	// Simulate n2 repeatedly timing out every 50ms with higher terms before n1's
+	// 160..180ms election deadline expires. Every vote request from n2 must be
+	// rejected by n1 (LastLogIndex 1 < 2) without pushing out n1's election timer.
+	for term := uint64(2); term <= 6; term++ {
+		time.Sleep(45 * time.Millisecond)
+		if c.nodes["n1"].View().Role == raft.RoleLeader {
+			break
+		}
+		resp := c.nodes["n1"].HandleVote(raft.VoteReq{
+			Term:         term,
+			CandidateID:  "n2",
+			LastLogIndex: 1,
+			LastLogTerm:  1,
+		})
+		if resp.Granted {
+			t.Fatalf("n1 granted vote to lagging candidate n2 in term %d", term)
+		}
+	}
+
+	leader, _ := c.waitLeaderAmong([]string{"n1", "n2"}, 2, 150*time.Millisecond)
+	if leader != "n1" {
+		t.Fatalf("expected up-to-date follower n1 to win election, got %s", leader)
+	}
+}

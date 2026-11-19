@@ -232,12 +232,13 @@ func (r *Raft) persistStateLocked() {
 }
 
 func (r *Raft) becomeFollower(term uint64, leaderID string, now time.Time) {
+	wasFollower := r.role == RoleFollower
 	changed := term != r.currentTerm
 	if changed {
 		r.currentTerm = term
 		r.votedFor = ""
 	}
-	if r.role != RoleFollower {
+	if !wasFollower {
 		r.logger.Printf("level=info event=role_change node=%s role=follower term=%d leader=%q", r.cfg.ID, term, leaderID)
 	}
 	r.role = RoleFollower
@@ -246,7 +247,9 @@ func (r *Raft) becomeFollower(term uint64, leaderID string, now time.Time) {
 	// requires RoleLeader; this is belt and braces so GET /status cannot show a
 	// stale remaining-lease figure after a step-down.
 	r.leaseDeadline = time.Time{}
-	r.resetElectionDeadline(now)
+	if !wasFollower || leaderID != "" {
+		r.resetElectionDeadline(now)
+	}
 	if changed {
 		r.persistStateLocked()
 	}
